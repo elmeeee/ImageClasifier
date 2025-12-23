@@ -1,0 +1,222 @@
+---
+// Dataset Explorer Component
+---
+
+<div class="section-header">
+	<h2>Dataset Information</h2>
+	<p>Explore the CIFAR-10 dataset with 10 categories of images</p>
+</div>
+
+<div class="info-cards">
+	<div class="info-card">
+		<div class="info-icon">📦</div>
+		<div class="info-content">
+			<h3 id="trainSamples">-</h3>
+			<p>Training Samples</p>
+		</div>
+	</div>
+	<div class="info-card">
+		<div class="info-icon">🧪</div>
+		<div class="info-content">
+			<h3 id="testSamples">-</h3>
+			<p>Test Samples</p>
+		</div>
+	</div>
+	<div class="info-card">
+		<div class="info-icon">🏷️</div>
+		<div class="info-content">
+			<h3 id="numClasses">-</h3>
+			<p>Classes</p>
+		</div>
+	</div>
+	<div class="info-card">
+		<div class="info-icon">🖼️</div>
+		<div class="info-content">
+			<h3 id="imageShape">-</h3>
+			<p>Image Shape</p>
+		</div>
+	</div>
+</div>
+
+<div class="categories-section">
+	<h3>Dataset Categories</h3>
+	<div class="categories-grid" id="categoriesGrid"></div>
+</div>
+
+<div class="samples-section">
+	<div class="samples-header">
+		<h3>Sample Images</h3>
+		<div class="samples-controls">
+			<label>
+				<input type="radio" name="sampleSource" value="test" checked>
+				Test Set
+			</label>
+			<label>
+				<input type="radio" name="sampleSource" value="train">
+				Train Set
+			</label>
+			<button class="btn btn-secondary" id="refreshSamples">
+				🔄 Refresh
+			</button>
+		</div>
+	</div>
+	<div class="samples-grid" id="samplesGrid">
+		<div class="loading">Loading samples...</div>
+	</div>
+</div>
+
+<style>
+	.section-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section-header h2 {
+		font-size: 2.5rem;
+		font-weight: 800;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.section-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+	}
+
+	.info-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 3rem;
+	}
+
+	.info-card {
+		background: var(--bg-card);
+		backdrop-filter: blur(10px);
+		border: 1px solid var(--border-color);
+		border-radius: 1rem;
+		padding: 2rem;
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		transition: var(--transition);
+	}
+
+	.info-card:hover {
+		transform: translateY(-5px);
+		box-shadow: var(--shadow-xl);
+		border-color: var(--primary);
+	}
+
+	.info-icon {
+		font-size: 3rem;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.1); }
+	}
+
+	.info-content h3 {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--primary-light);
+	}
+
+	.info-content p {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+
+	.categories-section {
+		margin-bottom: 3rem;
+	}
+
+	.categories-section h3 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 1.5rem;
+	}
+
+	.categories-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 1rem;
+	}
+
+	.samples-section {
+		margin-bottom: 3rem;
+	}
+
+	.samples-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.samples-header h3 {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+
+	.samples-controls {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	.samples-controls label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
+		color: var(--text-secondary);
+	}
+
+	.samples-controls input[type="radio"] {
+		accent-color: var(--primary);
+	}
+
+	.samples-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+		gap: 1rem;
+	}
+
+	.btn {
+		padding: 0.75rem 1.5rem;
+		border: none;
+		border-radius: 0.5rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: var(--transition);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.95rem;
+	}
+
+	.btn-secondary {
+		background: var(--bg-tertiary);
+		color: var(--text-primary);
+	}
+
+	.btn-secondary:hover {
+		background: var(--bg-card);
+	}
+
+	.loading {
+		text-align: center;
+		padding: 3rem;
+		color: var(--text-muted);
+		font-size: 1.1rem;
+		grid-column: 1 / -1;
+	}
+</style>

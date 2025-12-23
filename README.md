@@ -3,9 +3,9 @@
 A modern, full-stack image classification system with a beautiful web dashboard for training, monitoring, and deploying CIFAR-10 models. Built with **Astro**, **TensorFlow**, and **Flask**, optimized for deployment on **Vercel**.
 
 ![Dashboard Preview](https://img.shields.io/badge/Status-Production%20Ready-success)
-![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Astro](https://img.shields.io/badge/Astro-4.0+-purple)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.11-orange)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange)
 
 ## Features
 
@@ -74,7 +74,7 @@ ImageClasifier/
 ## Installation
 
 ### Prerequisites
-- **Python 3.8+**
+- **Python 3.10-3.12** (3.10 recommended for Vercel)
 - **Node.js 18+**
 - **npm or yarn**
 
@@ -270,7 +270,7 @@ PUBLIC_API_URL=http://localhost:5000/api  # API endpoint
 pip install tensorflow-macos tensorflow-metal
 
 # For other systems
-pip install tensorflow==2.11.1
+pip install tensorflow==2.15.0
 ```
 
 **2. Port Already in Use**

@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DatasetExplorer from '../components/DatasetExplorer.astro';
+import TrainingPanel from '../components/TrainingPanel.astro';
+import ProgressMonitor from '../components/ProgressMonitor.astro';
+import ModelsManager from '../components/ModelsManager.astro';
+import PredictionPanel from '../components/PredictionPanel.astro';
+---
+
+<Layout title="CIFAR-10 Training Dashboard">
+	<!-- Header -->
+	<header class="header">
+		<div class="container">
+			<div class="header-content">
+				<div class="logo">
+					<div class="logo-icon">🧠</div>
+					<h1>CIFAR-10 Training Dashboard</h1>
+				</div>
+				<div class="header-stats">
+					<div class="stat-item">
+						<span class="stat-label">Status</span>
+						<span class="stat-value" id="trainingStatus">Ready</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<main class="main-content">
+		<div class="container">
+			<!-- Navigation Tabs -->
+			<div class="tabs">
+				<button class="tab-btn active" data-tab="dataset">
+					<span class="tab-icon">📊</span>
+					Dataset Explorer
+				</button>
+				<button class="tab-btn" data-tab="training">
+					<span class="tab-icon">🚀</span>
+					Training
+				</button>
+				<button class="tab-btn" data-tab="progress">
+					<span class="tab-icon">📈</span>
+					Progress
+				</button>
+				<button class="tab-btn" data-tab="models">
+					<span class="tab-icon">💾</span>
+					Models
+				</button>
+				<button class="tab-btn" data-tab="predict">
+					<span class="tab-icon">🔮</span>
+					Predict
+				</button>
+			</div>
+
+			<!-- Tab Contents -->
+			<div class="tab-content active" id="dataset">
+				<DatasetExplorer />
+			</div>
+
+			<div class="tab-content" id="training">
+				<TrainingPanel />
+			</div>
+
+			<div class="tab-content" id="progress">
+				<ProgressMonitor />
+			</div>
+
+			<div class="tab-content" id="models">
+				<ModelsManager />
+			</div>
+
+			<div class="tab-content" id="predict">
+				<PredictionPanel />
+			</div>
+		</div>
+	</main>
+
+	<!-- Footer -->
+	<footer class="footer">
+		<div class="container">
+			<p>CIFAR-10 Image Classification Dashboard | Built with Astro, TensorFlow & Flask</p>
+		</div>
+	</footer>
+</Layout>
+
+<script>
+	import '../scripts/main.js';
+</script>

@@ -1,0 +1,178 @@
+---
+// Prediction Panel Component
+---
+
+<div class="section-header">
+	<h2>Test Predictions</h2>
+	<p>Upload an image to test your trained model</p>
+</div>
+
+<div class="predict-container">
+	<div class="upload-section">
+		<div class="upload-box" id="uploadBox">
+			<div class="upload-icon">📤</div>
+			<h3>Upload Image</h3>
+			<p>Drag & drop or click to select</p>
+			<input type="file" id="imageUpload" accept="image/*" style="display: none;">
+		</div>
+		
+		<div class="model-selector">
+			<label for="modelSelect">Select Model</label>
+			<select id="modelSelect">
+				<option value="cifar10-cnn-v2-best.h5">Best Model (v2)</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="prediction-results" id="predictionResults" style="display: none;">
+		<div class="result-image">
+			<img id="uploadedImage" alt="Uploaded image">
+		</div>
+		<div class="result-info">
+			<h3>Prediction Results</h3>
+			<div class="predicted-class">
+				<span class="class-label" id="predictedLabel">-</span>
+				<span class="confidence" id="confidence">-</span>
+			</div>
+			<div class="probabilities" id="probabilities"></div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.section-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section-header h2 {
+		font-size: 2.5rem;
+		font-weight: 800;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.section-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+	}
+
+	.predict-container {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+
+	.upload-section {
+		margin-bottom: 2rem;
+	}
+
+	.upload-box {
+		background: var(--bg-card);
+		backdrop-filter: blur(10px);
+		border: 2px dashed var(--border-color);
+		border-radius: 1rem;
+		padding: 3rem;
+		text-align: center;
+		cursor: pointer;
+		transition: var(--transition);
+	}
+
+	.upload-box:hover {
+		border-color: var(--primary);
+		background: rgba(99, 102, 241, 0.05);
+	}
+
+	.upload-icon {
+		font-size: 4rem;
+		margin-bottom: 1rem;
+	}
+
+	.upload-box h3 {
+		font-size: 1.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.upload-box p {
+		color: var(--text-muted);
+	}
+
+	.model-selector {
+		margin-top: 1.5rem;
+	}
+
+	.model-selector label {
+		display: block;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.model-selector select {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border-color);
+		border-radius: 0.5rem;
+		color: var(--text-primary);
+		font-size: 1rem;
+	}
+
+	.prediction-results {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		background: var(--bg-card);
+		backdrop-filter: blur(10px);
+		border: 1px solid var(--border-color);
+		border-radius: 1rem;
+		padding: 2rem;
+	}
+
+	.result-image img {
+		width: 100%;
+		border-radius: 0.75rem;
+	}
+
+	.result-info h3 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 1.5rem;
+	}
+
+	.predicted-class {
+		background: var(--gradient-primary);
+		padding: 1.5rem;
+		border-radius: 0.75rem;
+		text-align: center;
+		margin-bottom: 1.5rem;
+	}
+
+	.class-label {
+		display: block;
+		font-size: 2rem;
+		font-weight: 800;
+		color: white;
+		text-transform: uppercase;
+	}
+
+	.confidence {
+		display: block;
+		font-size: 1.25rem;
+		color: rgba(255, 255, 255, 0.9);
+		margin-top: 0.5rem;
+	}
+
+	.probabilities {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	@media (max-width: 768px) {
+		.prediction-results {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

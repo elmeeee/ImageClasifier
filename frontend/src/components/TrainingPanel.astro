@@ -1,0 +1,180 @@
+---
+// Training Panel Component
+---
+
+<div class="section-header">
+	<h2>Train New Model</h2>
+	<p>Configure and start training a new CIFAR-10 classifier</p>
+</div>
+
+<div class="training-form">
+	<div class="form-grid">
+		<div class="form-group">
+			<label for="epochs">Number of Epochs</label>
+			<input type="number" id="epochs" value="30" min="1" max="200">
+			<small>Recommended: 30-50 epochs</small>
+		</div>
+
+		<div class="form-group">
+			<label for="batchSize">Batch Size</label>
+			<input type="number" id="batchSize" value="64" min="16" max="256" step="16">
+			<small>Higher = faster but more memory</small>
+		</div>
+
+		<div class="form-group">
+			<label for="learningRate">Learning Rate</label>
+			<input type="number" id="learningRate" value="0.001" min="0.0001" max="0.1" step="0.0001">
+			<small>Default: 0.001 (Adam optimizer)</small>
+		</div>
+	</div>
+
+	<div class="form-actions">
+		<button class="btn btn-primary btn-large" id="startTrainingBtn">
+			<span class="btn-icon">🚀</span>
+			Start Training
+		</button>
+	</div>
+
+	<div class="training-status-box" id="trainingStatusBox" style="display: none;">
+		<div class="status-indicator"></div>
+		<div class="status-message" id="trainingMessage"></div>
+	</div>
+</div>
+
+<style>
+	.section-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section-header h2 {
+		font-size: 2.5rem;
+		font-weight: 800;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.section-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+	}
+
+	.training-form {
+		background: var(--bg-card);
+		backdrop-filter: blur(10px);
+		border: 1px solid var(--border-color);
+		border-radius: 1rem;
+		padding: 2.5rem;
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.form-grid {
+		display: grid;
+		gap: 2rem;
+		margin-bottom: 2rem;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-group label {
+		font-weight: 600;
+		color: var(--text-primary);
+	}
+
+	.form-group input {
+		padding: 0.75rem 1rem;
+		background: var(--bg-secondary);
+		border: 1px solid var(--border-color);
+		border-radius: 0.5rem;
+		color: var(--text-primary);
+		font-size: 1rem;
+		transition: var(--transition);
+	}
+
+	.form-group input:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.form-group small {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+
+	.form-actions {
+		display: flex;
+		justify-content: center;
+		margin-top: 2rem;
+	}
+
+	.btn {
+		padding: 0.75rem 1.5rem;
+		border: none;
+		border-radius: 0.5rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: var(--transition);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.95rem;
+	}
+
+	.btn-primary {
+		background: var(--gradient-primary);
+		color: white;
+		box-shadow: var(--shadow-md);
+	}
+
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-xl);
+	}
+
+	.btn-large {
+		padding: 1.25rem 2.5rem;
+		font-size: 1.1rem;
+	}
+
+	.btn-icon {
+		font-size: 1.25rem;
+	}
+
+	.training-status-box {
+		margin-top: 2rem;
+		padding: 1.5rem;
+		background: var(--bg-secondary);
+		border-radius: 0.75rem;
+		border-left: 4px solid var(--primary);
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.status-indicator {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--success);
+		animation: blink 1.5s ease-in-out infinite;
+	}
+
+	@keyframes blink {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.3; }
+	}
+
+	.status-message {
+		font-weight: 600;
+		color: var(--text-primary);
+	}
+</style>
