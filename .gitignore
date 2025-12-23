@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# TensorFlow / ML
+results/
+logs/
+*.h5
+*.pb
+*.ckpt
+*.json
+training_progress.json
+training_summary.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Vercel
+.vercel
+
+# Node
+node_modules/
+.npm
+.env
+.env.local
+.env.production
+
+# Astro
+frontend/dist/
+frontend/.astro/
