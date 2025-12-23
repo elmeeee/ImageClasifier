@@ -31,7 +31,6 @@ logs/
 *.h5
 *.pb
 *.ckpt
-*.json
 training_progress.json
 training_summary.json
 
