@@ -1848,21 +1848,25 @@ const description = "Train custom image classification models in your browser. D
 			"1000": {
 				id: { name: "Uang 1,000 Rupiah", desc: "Uang kertas Rp1.000 (2022) menampilkan pahlawan Tjut Meutia. Bagian belakangnya menunjukkan Tari Tifa, Banda Neira, dan Bunga Anggrek Larat. Ini adalah pecahan terendah dalam seri emisi 2022." },
 				en: { name: "1,000 Rupiah Note", desc: "The 1,000 Rupiah note (2022) features heroine Tjut Meutia. The reverse depicts the Tifa Dance, Banda Neira, and the Cooktown Orchid." },
+				my: { name: "Wang 1,000 Rupiah", desc: "Wang kertas 1,000 Rupiah (2022) menampilkan srikandi Tjut Meutia. Bahagian belakang menggambarkan Tarian Tifa dan Banda Neira." },
 				jp: { name: "1,000ルピア紙幣", desc: "1,000ルピア紙幣（2022年版）は、チュット・ムティアを主役に描いています。裏面にはティファ舞踊などが描かれています。" }
 			},
 			"2000": {
 				id: { name: "Uang 2,000 Rupiah", desc: "Uang kertas Rp2.000 (2022) menampilkan Mohammad Hoesni Thamrin. Bagian belakang menunjukkan Tari Piring, Ngarai Sianok, dan Bunga Jeumpa. Warna dominannya adalah abu-abu." },
 				en: { name: "2,000 Rupiah Note", desc: "The 2,000 Rupiah note (2022) features Mohammad Hoesni Thamrin. The reverse shows the Plate Dance, Sianok Canyon, and Jeumpa Flower." },
+				my: { name: "Wang 2,000 Rupiah", desc: "Wang kertas 2,000 Rupiah (2022) menampilkan Mohammad Hoesni Thamrin. Bahagian belakang menunjukkan Tarian Piring dan Ngarai Sianok." },
 				jp: { name: "2,000ルピア紙幣", desc: "2,000ルピア紙幣は、ムハンマド・フスニ・タムリンを描いています。裏面には皿回し舞踊が描かれています。" }
 			},
 			"5000": {
 				id: { name: "Uang 5,000 Rupiah", desc: "Uang kertas Rp5.000 (2022) menampilkan Dr. K.H. Idham Chalid. Bagian belakangnya menampilkan Tari Gambyong, Gunung Bromo, dan Bunga Sedap Malam." },
 				en: { name: "5,000 Rupiah Note", desc: "The 5,000 Rupiah note (2022) features Dr. K.H. Idham Chalid. The reverse depicts Gambyong Dance, Mount Bromo, and Tuberose." },
+				my: { name: "Wang 5,000 Rupiah", desc: "Wang kertas 5,000 Rupiah menampilkan Dr. K.H. Idham Chalid. Bahagian belakang menggambarkan Tarian Gambyong dan Gunung Bromo." },
 				jp: { name: "5,000ルピア紙幣", desc: "5,000ルピア紙幣は、イドハム・チャリド博士を描いています。裏面にはブロモ山などが描かれています。" }
 			},
 			"10000": {
 				id: { name: "Uang 10,000 Rupiah", desc: "Uang kertas Rp10.000 menampilkan pahlawan Frans Kaisiepo. Bagian belakang menunjukkan Tari Pakarena, Taman Nasional Wakatobi, dan Bunga Cempaka Hutan Kasar." },
 				en: { name: "10,000 Rupiah Note", desc: "Features Frans Kaisiepo on the front. The reverse shows Pakarena Dance, Wakatobi National Park, and Forest Champak." },
+				my: { name: "Wang 10,000 Rupiah", desc: "Menampilkan Frans Kaisiepo. Bahagian belakang menunjukkan Tarian Pakarena dan Taman Negara Wakatobi." },
 				jp: { name: "10,000ルピア紙幣", desc: "フランス・カイシエポを描いています。裏面にはワカトビ国立公園などが描かれています。" }
 			},
 			"20000": {
@@ -1991,6 +1995,7 @@ const description = "Train custom image classification models in your browser. D
 				encyName.textContent = curated.name;
 				encyDesc.textContent = curated.desc;
 			} else {
+				const ud = {
 					id: { title: `Objek: ${predictedClass}`, desc: `VisionAI mengenali pola ini sebagai "${predictedClass}". Model ini dilatih secara kustom menggunakan data Anda.` },
 					en: { title: `Object: ${predictedClass}`, desc: `VisionAI recognizes this pattern as "${predictedClass}". This model was custom trained using your specific dataset.` },
 					my: { title: `Objek: ${predictedClass}`, desc: `VisionAI mengecam corak ini sebagai "${predictedClass}". Model ini dilatih secara tersuai menggunakan data anda.` },
@@ -2124,12 +2129,7 @@ const description = "Train custom image classification models in your browser. D
 			}
 		}
 
-			// 4. Initial Setup
-			updateGlobalUI(currentGlobalLang);
-			document.querySelector(`.g-lang-btn[data-g-lang="${currentGlobalLang}"]`).classList.add('active');
-		});
-
-		const updateResultUI = async (lang) => {
+		const getZipBundle = async (format) => {
 			if (!trainedModel) return null;
 			
 			const zip = new JSZip();
@@ -2244,6 +2244,11 @@ const description = "Train custom image classification models in your browser. D
 			const blob = await getZipBundle('android');
 			downloadBlob(blob, "VisionAI_Android_Kit.zip");
 		});
+
+		// Initial Setup: Set default language and active button
+		updateGlobalUI(currentGlobalLang);
+		const defBtn = document.querySelector(`.g-lang-btn[data-g-lang="${currentGlobalLang}"]`);
+		if (defBtn) defBtn.classList.add('active');
 
 	</script>
 </body>
