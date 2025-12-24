@@ -4,7 +4,6 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Image Classifier">
 	<div class="app">
-		<!-- Header -->
 		<header class="header">
 			<div class="container">
 				<h1 class="logo">Image Classifier</h1>
@@ -12,7 +11,6 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 		</header>
 
-		<!-- Main Content -->
 		<main class="main">
 			<div class="container">
 				<!-- Step 1: Upload Dataset -->
@@ -21,7 +19,7 @@ import Layout from '../layouts/Layout.astro';
 						<div class="step-number">1</div>
 						<div>
 							<h2>Upload Training Data</h2>
-							<p>Select multiple images to train your model</p>
+							<p>Select a folder with images organized by class</p>
 						</div>
 					</div>
 					
@@ -29,9 +27,10 @@ import Layout from '../layouts/Layout.astro';
 						<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2"/>
 						</svg>
-						<h3>Drop images here or click to browse</h3>
-						<p class="text-muted">Select multiple images at once</p>
-						<input type="file" id="fileInput" multiple accept="image/*" hidden/>
+						<h3>Click to select folder</h3>
+						<p class="text-muted">Organize images in folders by class name</p>
+						<p class="help-text">Example: MyDataset/duit5000/img1.jpg, MyDataset/duit10000/img2.jpg</p>
+						<input type="file" id="fileInput" webkitdirectory directory multiple hidden/>
 					</div>
 
 					<div class="dataset-summary" id="datasetSummary" style="display: none;">
@@ -46,34 +45,14 @@ import Layout from '../layouts/Layout.astro';
 							</div>
 						</div>
 						<div class="class-tags" id="classTags"></div>
-						<button class="btn-clear" id="clearBtn">Clear All</button>
+						<button class="btn-primary" id="proceedToTrainBtn" disabled>Proceed to Training</button>
 					</div>
 				</section>
 
-				<!-- Step 2: Label Images -->
-				<section class="card" id="labelSection" style="display: none;">
-					<div class="card-header">
-						<div class="step-number">2</div>
-						<div>
-							<h2>Label Your Images</h2>
-							<p>Assign a class name to each image</p>
-						</div>
-					</div>
-
-					<div class="label-controls">
-						<input type="text" id="classInput" placeholder="Enter class name (e.g., cat, dog, car)"/>
-						<button class="btn-secondary" id="assignBtn">Assign to Selected</button>
-					</div>
-
-					<div class="image-grid" id="imageGrid"></div>
-					
-					<button class="btn-primary" id="proceedBtn" disabled>Proceed to Training</button>
-				</section>
-
-				<!-- Step 3: Train Model -->
+				<!-- Step 2: Train Model -->
 				<section class="card" id="trainSection" style="display: none;">
 					<div class="card-header">
-						<div class="step-number">3</div>
+						<div class="step-number">2</div>
 						<div>
 							<h2>Train Model</h2>
 							<p>Configure and start training</p>
@@ -89,10 +68,6 @@ import Layout from '../layouts/Layout.astro';
 							<div class="form-field">
 								<label>Batch Size</label>
 								<input type="number" id="batchSize" value="32" min="8" max="128" step="8"/>
-							</div>
-							<div class="form-field">
-								<label>Learning Rate</label>
-								<input type="number" id="learningRate" value="0.001" min="0.0001" max="0.1" step="0.0001"/>
 							</div>
 						</div>
 					</div>
@@ -112,10 +87,10 @@ import Layout from '../layouts/Layout.astro';
 					</div>
 				</section>
 
-				<!-- Step 4: Test Model -->
+				<!-- Step 3: Test Model -->
 				<section class="card" id="testSection" style="display: none;">
 					<div class="card-header">
-						<div class="step-number">4</div>
+						<div class="step-number">3</div>
 						<div>
 							<h2>Test Your Model</h2>
 							<p>Upload an image to classify</p>
@@ -143,6 +118,7 @@ import Layout from '../layouts/Layout.astro';
 									</div>
 									<span id="confidenceText"></span>
 								</div>
+								<div class="all-predictions" id="allPredictions"></div>
 							</div>
 						</div>
 					</div>
@@ -183,14 +159,13 @@ import Layout from '../layouts/Layout.astro';
 	}
 
 	.header {
-		background: var(--surface);
+		background: rgba(26, 26, 26, 0.8);
 		border-bottom: 1px solid var(--border);
 		padding: 20px 0;
 		position: sticky;
 		top: 0;
 		z-index: 100;
 		backdrop-filter: blur(20px);
-		background: rgba(26, 26, 26, 0.8);
 	}
 
 	.container {
@@ -293,6 +268,13 @@ import Layout from '../layouts/Layout.astro';
 		font-size: 14px;
 	}
 
+	.help-text {
+		font-size: 12px;
+		color: var(--text-muted);
+		margin-top: 8px;
+		opacity: 0.7;
+	}
+
 	.dataset-summary {
 		margin-top: 24px;
 		padding-top: 24px;
@@ -331,110 +313,20 @@ import Layout from '../layouts/Layout.astro';
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
-		margin-bottom: 16px;
+		margin-bottom: 24px;
 	}
 
 	.class-tag {
 		background: var(--bg);
-		padding: 8px 16px;
+		padding: 12px 20px;
 		border-radius: 20px;
 		font-size: 14px;
 		border: 1px solid var(--border);
 	}
 
-	.btn-clear {
-		background: transparent;
-		border: 1px solid var(--border);
-		color: var(--text);
-		padding: 10px 20px;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 14px;
-		transition: all 0.2s;
-	}
-
-	.btn-clear:hover {
-		background: var(--bg);
-	}
-
-	.label-controls {
-		display: flex;
-		gap: 12px;
-		margin-bottom: 24px;
-	}
-
-	.label-controls input {
-		flex: 1;
-		background: var(--bg);
-		border: 1px solid var(--border);
-		color: var(--text);
-		padding: 12px 16px;
-		border-radius: 8px;
-		font-size: 15px;
-	}
-
-	.label-controls input:focus {
-		outline: none;
-		border-color: var(--primary);
-	}
-
-	.btn-secondary {
-		background: var(--bg);
-		border: 1px solid var(--border);
-		color: var(--text);
-		padding: 12px 24px;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 15px;
-		font-weight: 500;
-		transition: all 0.2s;
-		white-space: nowrap;
-	}
-
-	.btn-secondary:hover {
-		background: var(--border);
-	}
-
-	.image-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-		gap: 12px;
-		margin-bottom: 24px;
-		max-height: 400px;
-		overflow-y: auto;
-		padding: 4px;
-	}
-
-	.image-item {
-		position: relative;
-		aspect-ratio: 1;
-		border-radius: 8px;
-		overflow: hidden;
-		cursor: pointer;
-		border: 2px solid transparent;
-		transition: all 0.2s;
-	}
-
-	.image-item.selected {
-		border-color: var(--primary);
-	}
-
-	.image-item img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.image-label {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: rgba(0, 0, 0, 0.8);
-		padding: 4px 8px;
-		font-size: 11px;
-		text-align: center;
-		backdrop-filter: blur(10px);
+	.class-tag strong {
+		color: var(--primary);
+		margin-right: 8px;
 	}
 
 	.btn-primary {
@@ -542,7 +434,7 @@ import Layout from '../layouts/Layout.astro';
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 300px;
+		min-height: 400px;
 	}
 
 	.test-upload:hover {
@@ -561,6 +453,7 @@ import Layout from '../layouts/Layout.astro';
 		border-radius: var(--radius);
 		overflow: hidden;
 		background: var(--bg);
+		border: 1px solid var(--border);
 	}
 
 	.test-result img {
@@ -574,7 +467,7 @@ import Layout from '../layouts/Layout.astro';
 	}
 
 	.result-class {
-		font-size: 28px;
+		font-size: 32px;
 		font-weight: 700;
 		margin-bottom: 16px;
 		color: var(--success);
@@ -600,6 +493,28 @@ import Layout from '../layouts/Layout.astro';
 		color: var(--text-muted);
 	}
 
+	.all-predictions {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid var(--border);
+	}
+
+	.prediction-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 8px 0;
+		font-size: 14px;
+	}
+
+	.prediction-item .name {
+		color: var(--text);
+	}
+
+	.prediction-item .score {
+		color: var(--text-muted);
+	}
+
 	@media (max-width: 768px) {
 		.test-container {
 			grid-template-columns: 1fr;
@@ -611,195 +526,208 @@ import Layout from '../layouts/Layout.astro';
 	}
 </style>
 
-<script>
-	let uploadedFiles: File[] = [];
-	let labeledImages: { file: File; label: string }[] = [];
-	let selectedIndices: Set<number> = new Set();
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
 
-	// Upload handling
-	const uploadZone = document.getElementById('uploadZone')!;
-	const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-	const datasetSummary = document.getElementById('datasetSummary')!;
-	const labelSection = document.getElementById('labelSection')!;
+<script is:inline>
+	// Use global tf from CDN
+
+	let uploadedDataset = {};
+	let trainedModel = null;
+	let classNames = [];
+
+	// Upload handling with auto-labeling from folder structure
+	const uploadZone = document.getElementById('uploadZone');
+	const fileInput = document.getElementById('fileInput');
+	const datasetSummary = document.getElementById('datasetSummary');
+	const proceedToTrainBtn = document.getElementById('proceedToTrainBtn') as HTMLButtonElement;
 
 	uploadZone.addEventListener('click', () => fileInput.click());
 
-	uploadZone.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		uploadZone.style.borderColor = 'var(--primary)';
-	});
-
-	uploadZone.addEventListener('dragleave', () => {
-		uploadZone.style.borderColor = 'var(--border)';
-	});
-
-	uploadZone.addEventListener('drop', (e) => {
-		e.preventDefault();
-		uploadZone.style.borderColor = 'var(--border)';
-		const files = Array.from(e.dataTransfer?.files || []);
-		handleFiles(files);
-	});
-
 	fileInput.addEventListener('change', (e) => {
-		const files = Array.from((e.target as HTMLInputElement).files || []);
-		handleFiles(files);
+		const files = Array.from((e.target).files || []);
+		processDataset(files);
 	});
 
-	function handleFiles(files: File[]) {
-		const imageFiles = files.filter(f => f.type.startsWith('image/'));
-		uploadedFiles = imageFiles;
+	function processDataset(files[]) {
+		uploadedDataset = {};
 		
-		if (imageFiles.length > 0) {
-			document.getElementById('totalImages')!.textContent = imageFiles.length.toString();
-			datasetSummary.style.display = 'block';
-			labelSection.style.display = 'block';
-			
-			renderImageGrid();
-		}
-	}
-
-	function renderImageGrid() {
-		const grid = document.getElementById('imageGrid')!;
-		grid.innerHTML = '';
-
-		uploadedFiles.forEach((file, index) => {
-			const item = document.createElement('div');
-			item.className = 'image-item';
-			
-			const img = document.createElement('img');
-			img.src = URL.createObjectURL(file);
-			
-			const existing = labeledImages.find(l => l.file === file);
-			if (existing) {
-				const label = document.createElement('div');
-				label.className = 'image-label';
-				label.textContent = existing.label;
-				item.appendChild(label);
-			}
-			
-			item.appendChild(img);
-			
-			item.addEventListener('click', () => {
-				if (selectedIndices.has(index)) {
-					selectedIndices.delete(index);
-					item.classList.remove('selected');
-				} else {
-					selectedIndices.add(index);
-					item.classList.add('selected');
+		files.forEach(file => {
+			if (file.type.startsWith('image/')) {
+				// Extract class name from folder structure
+				const pathParts = file.webkitRelativePath.split('/');
+				const className = pathParts[pathParts.length - 2]; // Parent folder name
+				
+				if (!uploadedDataset[className]) {
+					uploadedDataset[className] = [];
 				}
-			});
-			
-			grid.appendChild(item);
-		});
-	}
-
-	// Labeling
-	const classInput = document.getElementById('classInput') as HTMLInputElement;
-	const assignBtn = document.getElementById('assignBtn')!;
-	const proceedBtn = document.getElementById('proceedBtn') as HTMLButtonElement;
-
-	assignBtn.addEventListener('click', () => {
-		const className = classInput.value.trim();
-		if (!className || selectedIndices.size === 0) return;
-
-		selectedIndices.forEach(index => {
-			const file = uploadedFiles[index];
-			const existingIndex = labeledImages.findIndex(l => l.file === file);
-			if (existingIndex >= 0) {
-				labeledImages[existingIndex].label = className;
-			} else {
-				labeledImages.push({ file, label: className });
+				uploadedDataset[className].push(file);
 			}
 		});
 
-		selectedIndices.clear();
-		classInput.value = '';
-		renderImageGrid();
-		updateClassSummary();
-		
-		// Enable proceed if at least 2 classes and 50% of images are labeled
-		const classes = new Set(labeledImages.map(l => l.label));
-		const labeledPercent = (labeledImages.length / uploadedFiles.length) * 100;
-		if (classes.size >= 2 && labeledPercent >= 50) {
-			proceedBtn.disabled = false;
+		const classes = Object.keys(uploadedDataset);
+		const totalImages = Object.values(uploadedDataset).reduce((sum, imgs) => sum + imgs.length, 0);
+
+		if (classes.length >= 2) {
+			classNames = classes;
+			document.getElementById('totalImages')!.textContent = totalImages.toString();
+			document.getElementById('totalClasses')!.textContent = classes.length.toString();
+			
+			const classTags = document.getElementById('classTags');
+			classTags.innerHTML = classes
+				.map(name => `<div class="class-tag"><strong>${name}</strong>${uploadedDataset[name].length} images</div>`)
+				.join('');
+
+			datasetSummary.style.display = 'block';
+			proceedToTrainBtn.disabled = false;
 		}
-	});
-
-	function updateClassSummary() {
-		const classes = new Set(labeledImages.map(l => l.label));
-		document.getElementById('totalClasses')!.textContent = classes.size.toString();
-		
-		const classTags = document.getElementById('classTags')!;
-		classTags.innerHTML = Array.from(classes)
-			.map(c => `<div class="class-tag">${c} (${labeledImages.filter(l => l.label === c).length})</div>`)
-			.join('');
 	}
-
-	document.getElementById('clearBtn')!.addEventListener('click', () => {
-		uploadedFiles = [];
-		labeledImages = [];
-		selectedIndices.clear();
-		datasetSummary.style.display = 'none';
-		labelSection.style.display = 'none';
-		fileInput.value = '';
-	});
 
 	// Training
-	proceedBtn.addEventListener('click', () => {
+	proceedToTrainBtn?.addEventListener('click', () => {
 		document.getElementById('trainSection')!.style.display = 'block';
-		proceedBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		setTimeout(() => {
 			document.getElementById('trainSection')!.scrollIntoView({ behavior: 'smooth' });
-		}, 300);
+		}, 100);
 	});
 
-	document.getElementById('startTrainBtn')!.addEventListener('click', () => {
-		const progressSection = document.getElementById('progressSection')!;
+	document.getElementById('startTrainBtn')!.addEventListener('click', async () => {
+		const progressSection = document.getElementById('progressSection');
 		progressSection.style.display = 'block';
 
-		let progress = 0;
-		const interval = setInterval(() => {
-			progress += Math.random() * 5;
-			if (progress >= 100) {
-				progress = 100;
-				clearInterval(interval);
-				document.getElementById('progressText')!.textContent = 'Training complete!';
-				document.getElementById('testSection')!.style.display = 'block';
-				setTimeout(() => {
-					document.getElementById('testSection')!.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
+		// Prepare training data
+		const xs[] = [];
+		const ys[] = [];
+
+		for (let i = 0; i < classNames.length; i++) {
+			const className = classNames[i];
+			const images = uploadedDataset[className];
+
+			for (const file of images) {
+				const img = await loadImage(file);
+				xs.push(img);
+				ys.push(i);
 			}
-			document.getElementById('progressFill')!.style.width = progress + '%';
-			document.getElementById('progressPercent')!.textContent = Math.round(progress) + '%';
-		}, 300);
+		}
+
+		// Create simple model
+		const model = tf.sequential({
+			layers: [
+				tf.layers.flatten({ inputShape: [224, 224, 3] }),
+				tf.layers.dense({ units: 128, activation: 'relu' }),
+				tf.layers.dropout({ rate: 0.2 }),
+				tf.layers.dense({ units: classNames.length, activation: 'softmax' })
+			]
+		});
+
+		model.compile({
+			optimizer: 'adam',
+			loss: 'sparseCategoricalCrossentropy',
+			metrics: ['accuracy']
+		});
+
+		const xsTensor = tf.stack(xs);
+		const ysTensor = tf.tensor1d(ys, 'int32');
+
+		const epochs = parseInt((document.getElementById('epochs')).value);
+
+		// Train with progress
+		await model.fit(xsTensor, ysTensor, {
+			epochs: epochs,
+			callbacks: {
+				onEpochEnd: (epoch, logs) => {
+					const progress = ((epoch + 1) / epochs) * 100;
+					document.getElementById('progressFill')!.style.width = progress + '%';
+					document.getElementById('progressPercent')!.textContent = Math.round(progress) + '%';
+					document.getElementById('progressText')!.textContent = `Epoch ${epoch + 1}/${epochs} - Loss: ${logs?.loss.toFixed(4)}`;
+				}
+			}
+		});
+
+		trainedModel = model;
+		document.getElementById('progressText')!.textContent = 'Training complete!';
+		document.getElementById('testSection')!.style.display = 'block';
+		
+		setTimeout(() => {
+			document.getElementById('testSection')!.scrollIntoView({ behavior: 'smooth' });
+		}, 500);
+
+		// Cleanup
+		xsTensor.dispose();
+		ysTensor.dispose();
 	});
 
+	async function loadImage(file) {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const img = new Image();
+				img.onload = () => {
+					const tensor = tf.browser.fromPixels(img)
+						.resizeBilinear([224, 224])
+						.toFloat()
+						.div(255.0);
+					resolve(tensor);
+				};
+				img.src = e.target?.result as string;
+			};
+			reader.readAsDataURL(file);
+		});
+	}
+
 	// Testing
-	const testUpload = document.getElementById('testUpload')!;
-	const testInput = document.getElementById('testInput') as HTMLInputElement;
-	const testResult = document.getElementById('testResult')!;
+	const testUpload = document.getElementById('testUpload');
+	const testInput = document.getElementById('testInput');
+	const testResult = document.getElementById('testResult');
 
 	testUpload.addEventListener('click', () => testInput.click());
 
-	testInput.addEventListener('change', (e) => {
-		const file = (e.target as HTMLInputElement).files?.[0];
-		if (file) {
+	testInput.addEventListener('change', async (e) => {
+		const file = (e.target).files?.[0];
+		if (file && trainedModel) {
 			const reader = new FileReader();
-			reader.onload = (e) => {
-				const img = document.getElementById('testImage') as HTMLImageElement;
+			reader.onload = async (e) => {
+				const img = document.getElementById('testImage');
 				img.src = e.target?.result as string;
 				
-				const classes = Array.from(new Set(labeledImages.map(l => l.label)));
-				if (classes.length > 0) {
-					const randomClass = classes[Math.floor(Math.random() * classes.length)];
-					const confidence = 75 + Math.random() * 20;
-					
-					document.getElementById('resultClass')!.textContent = randomClass;
+				// Load and preprocess image
+				const testImg = new Image();
+				testImg.onload = async () => {
+					const tensor = tf.browser.fromPixels(testImg)
+						.resizeBilinear([224, 224])
+						.toFloat()
+						.div(255.0)
+						.expandDims(0);
+
+					// Predict
+					const predictions = await trainedModel.predict(tensor) as tf.Tensor;
+					const probabilities = await predictions.data();
+					const maxIndex = probabilities.indexOf(Math.max(...Array.from(probabilities)));
+					const confidence = probabilities[maxIndex] * 100;
+
+					// Display result
+					document.getElementById('resultClass')!.textContent = classNames[maxIndex];
 					document.getElementById('confidenceFill')!.style.width = confidence + '%';
 					document.getElementById('confidenceText')!.textContent = `${confidence.toFixed(1)}% confidence`;
-					
+
+					// Show all predictions
+					const allPreds = document.getElementById('allPredictions');
+					allPreds.innerHTML = '<h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">All Predictions:</h4>' +
+						classNames
+							.map((name, i) => `
+								<div class="prediction-item">
+									<span class="name">${name}</span>
+									<span class="score">${(probabilities[i] * 100).toFixed(1)}%</span>
+								</div>
+							`)
+							.join('');
+
 					testResult.style.display = 'block';
-				}
+
+					// Cleanup
+					tensor.dispose();
+					predictions.dispose();
+				};
+				testImg.src = e.target?.result as string;
 			};
 			reader.readAsDataURL(file);
 		}
