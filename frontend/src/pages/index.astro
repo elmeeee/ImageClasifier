@@ -1007,7 +1007,7 @@ const description = "Train custom image classification models in your browser. D
 			const classes = Object.keys(uploadedDataset);
 			const totalImages = Object.values(uploadedDataset).reduce((sum, imgs) => sum + imgs.length, 0);
 
-			if (classes.length >= 1 && totalImages > 0) {
+			if (classes.length >= 2 && totalImages > 0) {
 				classNames = classes;
 				document.getElementById('totalImages').textContent = totalImages;
 				document.getElementById('totalClasses').textContent = classes.length;
@@ -1019,6 +1019,9 @@ const description = "Train custom image classification models in your browser. D
 
 				datasetSummary.style.display = 'block';
 			}
+		} else if (classes.length === 1) {
+			alert("⚠️ Need at least 2 classes!\n\nYou only uploaded: " + classes[0] + "\n\nPlease organize images in folders:\nMyData/class1/\nMyData/class2/");
+
 		}
 
 		startTrainBtn.addEventListener('click', async () => {
