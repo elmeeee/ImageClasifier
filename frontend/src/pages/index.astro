@@ -61,8 +61,9 @@ const description = "Train custom image classification models in your browser. D
 				</div>
 				<div class="header-right">
 					<div class="global-lang-selector">
-						<button class="g-lang-btn active" data-g-lang="id">ID</button>
 						<button class="g-lang-btn" data-g-lang="en">EN</button>
+						<button class="g-lang-btn" data-g-lang="id">ID</button>
+						<button class="g-lang-btn" data-g-lang="my">MY</button>
 						<button class="g-lang-btn" data-g-lang="jp">JP</button>
 					</div>
 					<div class="status-badge" id="statusBadge">
@@ -482,25 +483,36 @@ const description = "Train custom image classification models in your browser. D
 			border: 1px solid var(--border);
 		}
 
+		.global-lang-selector {
+			display: flex;
+			background: rgba(255, 255, 255, 0.05);
+			padding: 4px;
+			border-radius: 12px;
+			border: 1px solid var(--border);
+			gap: 2px;
+		}
+
 		.g-lang-btn {
 			background: transparent;
 			border: none;
 			color: var(--text-muted);
-			padding: 4px 8px;
-			border-radius: 6px;
+			padding: 6px 12px;
+			border-radius: 8px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 			cursor: pointer;
-			transition: all 0.2s;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.g-lang-btn:hover {
 			color: var(--text);
+			background: rgba(255, 255, 255, 0.03);
 		}
 
 		.g-lang-btn.active {
 			background: var(--primary);
 			color: white;
+			box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
 		}
 
 
@@ -1590,23 +1602,23 @@ const description = "Train custom image classification models in your browser. D
 					for (const file of images) {
 						const imgTensor = await loadImage(file);
 						
-						// Use tf.tidy to prevent memory leaks during extraction
-						tf.tidy(() => {
-							// Normal image
-							featArrs.push(featureExtractor.infer(imgTensor, true));
-							labArrs.push(i);
-
-							// Data Augmentation: Horizontal Flip
+						// Data Processing with AI Augmentation
+						const features = tf.tidy(() => {
 							const expanded = imgTensor.expandDims(0);
 							const flipped = tf.image.flipLeftRight(expanded);
-							featArrs.push(featureExtractor.infer(flipped, true));
-							labArrs.push(i);
-
-							// Data Augmentation: Slight Rotation (AI variety)
-							const rotated = tf.image.rotateWithOffset(expanded, 0.1); // ~5-6 degrees
-							featArrs.push(featureExtractor.infer(rotated, true));
-							labArrs.push(i);
+							const rotated = tf.image.rotateWithOffset(expanded, 0.1);
+							
+							// Extract feature vectors (embeddings)
+							return [
+								featureExtractor.infer(imgTensor, true),
+								featureExtractor.infer(flipped, true),
+								featureExtractor.infer(rotated, true)
+							];
 						});
+
+						// Keep features outside tidy context
+						features.forEach(f => featArrs.push(f));
+						labArrs.push(i, i, i);
 						
 						imgTensor.dispose();
 					}
@@ -1698,36 +1710,36 @@ const description = "Train custom image classification models in your browser. D
 			id: {
 				"status-ready": "VisionAI Siap",
 				"hero-title": "Latih Klasifikasi Gambar Anda",
-				"hero-desc": "Tanpa coding. Drag & drop gambar, dan biarkan AI bekerja.",
+				"hero-desc": "Tanpa coding. Tarik & lepas gambar, dan biarkan AI bekerja.",
 				"f-browser": "Pelatihan di Browser",
 				"f-realtime": "Hasil Real-time",
 				"f-noserver": "Tanpa Server",
 				"step-1-title": "Langkah 1: Unggah Data Latih",
-				"step-1-subtitle": "Tarik & lepas folder dengan gambar terorganisir",
-				"upload-title": "Letakkan folder Anda di sini",
-				"upload-subtitle": "atau klik untuk mencari file",
-				"upload-hint": "Aturan: NamaFolder/Gambar1.jpg",
+				"step-1-subtitle": "Tarik folder berisi gambar terorganisir",
+				"upload-title": "Letakkan folder di sini",
+				"upload-subtitle": "atau klik untuk pilih berkas",
+				"upload-hint": "Aturan: NamaFolder/Gambar.jpg",
 				"stat-images": "Total Gambar",
 				"stat-classes": "Kelas",
 				"btn-train": "Mulai Pelatihan",
-				"step-2-title": "Pelatihan Berjalan",
-				"step-2-subtitle": "Model sedang mempelajari data Anda",
+				"step-2-title": "Pelatihan Sedang Jalan",
+				"step-2-subtitle": "Model sedang mempelajari dataset Anda",
 				"prog-complete": "Selesai",
 				"step-3-title": "Uji Model Anda",
-				"step-3-subtitle": "Unggah gambar untuk melihat prediksi",
+				"step-3-subtitle": "Unggah gambar untuk melihat hasil",
 				"test-upload": "Klik untuk unggah gambar uji",
 				"res-pred": "Prediksi",
-				"res-conf": "Tingkat Keyakinan",
-				"res-preds": "Semua Prediksi",
-				"res-analysis": "Wawasan Analisis",
+				"res-conf": "Tingkat Kepercayaan",
+				"res-preds": "Hasil Lainnya",
+				"res-analysis": "Analisa Wawasan",
 				"res-ency": "Ensiklopedia",
 				"footer-powered": "Didukung oleh",
-				"step-4-title": "Langkah 4: Ekspor & Gunakan Model",
-				"step-4-subtitle": "Unduh paket model (Mendukung Mac & Windows)",
-				"exp-tfjs": "Paket Web Universal (.zip)",
-				"exp-tfjs-desc": "Berisi model.json, weights, dan halaman uji HTML siap pakai.",
-				"exp-convert": "Kit Deployment Mobile",
-				"exp-convert-desc": "Script konversi bungkusan dan instruksi untuk iOS/Android."
+				"step-4-title": "Langkah 4: Ekspor & Gunakan",
+				"step-4-subtitle": "Unduh paket model (Siap pakai di Mac/Windows)",
+				"exp-tfjs": "Universal Web Bundle (.zip)",
+				"exp-tfjs-desc": "Berisi model.json, weights, dan HTML demo.",
+				"exp-convert": "Mobile Deployment Kit",
+				"exp-convert-desc": "Script konversi untuk iOS (CoreML) dan Android (TFLite)."
 			},
 			en: {
 				"status-ready": "VisionAI Ready",
@@ -1752,7 +1764,7 @@ const description = "Train custom image classification models in your browser. D
 				"test-upload": "Click to upload test image",
 				"res-pred": "Prediction",
 				"res-conf": "Confidence",
-				"res-preds": "All Predictions",
+				"res-preds": "Alternative Results",
 				"res-analysis": "Analysis Insight",
 				"res-ency": "Encyclopedia",
 				"footer-powered": "Powered by",
@@ -1763,10 +1775,44 @@ const description = "Train custom image classification models in your browser. D
 				"exp-convert": "Mobile Deployment Kits",
 				"exp-convert-desc": "Bundled scripts and instructions to convert for iOS/Android."
 			},
+			my: {
+				"status-ready": "VisionAI Bersedia",
+				"hero-title": "Latih Pengelas Imej Anda Sendiri",
+				"hero-desc": "Tiada pengaturcaraan diperlukan. Hanya tarik & lepas imej, biar AI lakukan magis.",
+				"f-browser": "Latihan Berasaskan Pelayar",
+				"f-realtime": "Keputusan Masa-Nyata",
+				"f-noserver": "Tiada Pelayan Diperlukan",
+				"step-1-title": "Langkah 1: Muat Naik Data Latihan",
+				"step-1-subtitle": "Tarik & lepas folder dengan imej tersusun",
+				"upload-title": "Lepaskan folder anda di sini",
+				"upload-subtitle": "atau klik untuk cari fail",
+				"upload-hint": "Aturan: NamaFolder/Gambar1.jpg",
+				"stat-images": "Jumlah Imej",
+				"stat-classes": "Kelas",
+				"btn-train": "Mulakan Latihan",
+				"step-2-title": "Latihan Sedang Berjalan",
+				"step-2-subtitle": "Model anda sedang belajar daripada data",
+				"prog-complete": "Selesai",
+				"step-3-title": "Uji Model Anda",
+				"step-3-subtitle": "Muat naik imej untuk melihat ramalan",
+				"test-upload": "Klik untuk muat naik imej ujian",
+				"res-pred": "Ramalan",
+				"res-conf": "Keyakinan",
+				"res-preds": "Keputusan Alternatif",
+				"res-analysis": "Wawasan Analisis",
+				"res-ency": "Ensiklopedia",
+				"footer-powered": "Dikuasakan oleh",
+				"step-4-title": "Langkah 4: Eksport & Gunakan Model",
+				"step-4-subtitle": "Muat turun bundle model (Sesuai untuk Mac & Windows)",
+				"exp-tfjs": "Bundle Universal Web (.zip)",
+				"exp-tfjs-desc": "Termasuk model.json, pemberat, dan halaman ujian HTML sedia guna.",
+				"exp-convert": "Kit Deployment Mudah Alih",
+				"exp-convert-desc": "Skrip penukaran dan arahan untuk iOS/Android."
+			},
 			jp: {
-				"status-ready": "準備完了",
-				"hero-title": "自作画像分類器のトレーニング",
-				"hero-desc": "コーディング不要。画像をアップロードしてAIに任せましょう。",
+				"status-ready": "VisionAI 準備完了",
+				"hero-title": "独自の画像分類器のトレーニング",
+				"hero-desc": "コーディング不要。画像をドラッグ＆ドロップして、AIに任せましょう。",
 				"f-browser": "ブラウザベース学習",
 				"f-realtime": "リアルタイム結果",
 				"f-noserver": "サーバー不要",
@@ -1778,19 +1824,19 @@ const description = "Train custom image classification models in your browser. D
 				"stat-images": "総画像数",
 				"stat-classes": "クラス数",
 				"btn-train": "トレーニング開始",
-				"step-2-title": "トレーニング中",
+				"step-2-title": "トレーニング進行中",
 				"step-2-subtitle": "モデルが学習しています",
 				"prog-complete": "完了",
 				"step-3-title": "モデルをテストする",
-				"step-3-subtitle": "画像をアップロードして結果を確認",
+				"step-3-subtitle": "画像をアップロードして予測を確認",
 				"test-upload": "テスト画像をアップロード",
-				"res-pred": "予測結果",
+				"res-pred": "予測",
 				"res-conf": "信頼度",
-				"res-preds": "すべての予測",
+				"res-preds": "他の予測候補",
 				"res-analysis": "分析の洞察",
 				"res-ency": "百科事典",
 				"footer-powered": "提供元",
-				"step-4-title": "ステップ 4: モデルのエクスポートと使用",
+				"step-4-title": "ステップ 4: エクスポートと使用",
 				"step-4-subtitle": "モデルパッケージのダウンロード (Mac & Windows 対応)",
 				"exp-tfjs": "ユニバーサル Web パッケージ (.zip)",
 				"exp-tfjs-desc": "model.json、重み、および実行可能な HTML テストページが含まれています。",
@@ -1822,26 +1868,31 @@ const description = "Train custom image classification models in your browser. D
 			"20000": {
 				id: { name: "Uang 20,000 Rupiah", desc: "Uang kertas Rp20.000 menampilkan Dr. G.S.S.J. Ratulangi. Bagian belakang menunjukkan Tari Gong, Derawan, dan Bunga Anggrek Hitam." },
 				en: { name: "20,000 Rupiah Note", desc: "Features Dr. G.S.S.J. Ratulangi. The reverse shows Gong Dance, Derawan Islands, and Black Orchid." },
+				my: { name: "Wang 20,000 Rupiah", desc: "Menampilkan Dr. G.S.S.J. Ratulangi. Bahagian belakang menunjukkan Tarian Gong, Kepulauan Derawan, dan Orkid Hitam." },
 				jp: { name: "20,000ルピア紙幣", desc: "サム・ラトゥランギ博士を描いています。裏面にはデラワン諸島などが描かれています。" }
 			},
 			"50000": {
 				id: { name: "Uang 50,000 Rupiah", desc: "Uang kertas Rp50.000 menampilkan Ir. H. Djuanda Kartawidjaja. Bagian belakang menunjukkan Tari Legong, Taman Nasional Komodo, dan Bunga Jepun Bali." },
 				en: { name: "50,000 Rupiah Note", desc: "Features Ir. H. Djuanda Kartawidjaja. The reverse shows Legong Dance, Komodo National Park, and Frangipani." },
+				my: { name: "Wang 50,000 Rupiah", desc: "Menampilkan Ir. H. Djuanda Kartawidjaja. Bahagian belakang menunjukkan Tarian Legong, Taman Nasional Komodo, dan Bunga Kemboja." },
 				jp: { name: "50,000ルピア紙幣", desc: "ジュアンダ・カルタウィジャヤを描いています。裏面にはコモド国立公園などが描かれています。" }
 			},
 			"100000": {
 				id: { name: "Uang 100,000 Rupiah", desc: "Pecahan tertinggi Indonesia (Red Note) menampilkan Soekarno dan Hatta. Bagian belakang menunjukkan Tari Topeng Betawi, Raja Ampat, dan Bunga Anggrek Bulan." },
 				en: { name: "100,000 Rupiah Note", desc: "Indonesia's highest denomination featuring Soekarno and Hatta. Shows Raja Ampat and Moon Orchid on the reverse." },
+				my: { name: "Wang 100,000 Rupiah", desc: "Denominasi tertinggi Indonesia menampilkan Soekarno dan Hatta. Menunjukkan Raja Ampat dan Orkid Bulan." },
 				jp: { name: "100,000ルピア紙幣", desc: "インドネシアの最高額紙幣。スカルノとハッタ、そしてラジャ・アンパットが描かれています。" }
 			},
 			"laptop": {
 				id: { name: "Laptop / Komputer Portabel", desc: "Perangkat elektronik bergerak yang mengintegrasikan layar, keyboard, dan prosesor. Revolusi teknologi yang memungkinkan bekerja dari mana saja." },
 				en: { name: "Laptop Computer", desc: "A portable personal computer designed for mobile productivity, integrating all components in one unit." },
+				my: { name: "Komputer Riba", desc: "Peranti elektronik mudah alih yang mengintegrasikan skrin, papan kekunci, dan pemproses untuk produktiviti mudah alih." },
 				jp: { name: "ノートパソコン", desc: "持ち運び可能なパーソナルコンピュータで、現代の生産性に不可欠なツールです。" }
 			}
 		};
 
-		let currentGlobalLang = 'id';
+		let currentGlobalLang = 'en'; // Changed default to English
+
 		let lastProbabilities = null;
 		let lastMaxIndex = null;
 		let lastConfidence = null;
@@ -1877,6 +1928,12 @@ const description = "Train custom image classification models in your browser. D
 					high: `AI predicts this is <span class="insight-highlight">"${predictedClass}"</span>.`,
 					low: `AI guesses this is <span class="insight-highlight">"${predictedClass}"</span> with low confidence.`,
 					warning: `<br/><small style="opacity:0.6;">*Based on visual patterns from your dataset.</small>`
+				},
+				my: {
+					vhigh: `AI Sangat Yakin! Ini adalah <span class="insight-highlight">"${predictedClass}"</span>.`,
+					high: `AI meramalkan ini adalah <span class="insight-highlight">"${predictedClass}"</span>.`,
+					low: `AI meneka ini adalah <span class="insight-highlight">"${predictedClass}"</span> dengan keyakinan rendah.`,
+					warning: `<br/><small style="opacity:0.6;">*Berdasarkan corak visual daripada dataset anda.</small>`
 				},
 				jp: {
 					vhigh: `AIは非常に自信があります！これは <span class="insight-highlight">"${predictedClass}"</span> です。`,
@@ -1934,9 +1991,9 @@ const description = "Train custom image classification models in your browser. D
 				encyName.textContent = curated.name;
 				encyDesc.textContent = curated.desc;
 			} else {
-				const ud = {
 					id: { title: `Objek: ${predictedClass}`, desc: `VisionAI mengenali pola ini sebagai "${predictedClass}". Model ini dilatih secara kustom menggunakan data Anda.` },
 					en: { title: `Object: ${predictedClass}`, desc: `VisionAI recognizes this pattern as "${predictedClass}". This model was custom trained using your specific dataset.` },
+					my: { title: `Objek: ${predictedClass}`, desc: `VisionAI mengecam corak ini sebagai "${predictedClass}". Model ini dilatih secara tersuai menggunakan data anda.` },
 					jp: { title: `オブジェクト: ${predictedClass}`, desc: `VisionAIはこのパターンを「${predictedClass}」として認識します。このモデルは提供されたデータでトレーニングされました。` }
 				}[lang];
 				encyName.textContent = ud.title;
@@ -2067,17 +2124,12 @@ const description = "Train custom image classification models in your browser. D
 			}
 		}
 
-		// EXPORT HUB LOGIC: BUNDLING FOR MAC & WINDOWS COMPATIBILITY
-		const downloadBlob = (blob, filename) => {
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = filename;
-			link.click();
-			URL.revokeObjectURL(url);
-		};
+			// 4. Initial Setup
+			updateGlobalUI(currentGlobalLang);
+			document.querySelector(`.g-lang-btn[data-g-lang="${currentGlobalLang}"]`).classList.add('active');
+		});
 
-		const getZipBundle = async (format) => {
+		const updateResultUI = async (lang) => {
 			if (!trainedModel) return null;
 			
 			const zip = new JSZip();
