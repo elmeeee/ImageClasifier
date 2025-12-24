@@ -616,12 +616,12 @@ import Layout from '../layouts/Layout.astro';
 
 		model.compile({
 			optimizer: 'adam',
-			loss: 'sparseCategoricalCrossentropy',
+			loss: 'categoricalCrossentropy',
 			metrics: ['accuracy']
 		});
 
 		const xsTensor = tf.stack(xs);
-		const ysTensor = tf.tensor1d(ys, 'int32');
+		const ysTensor = tf.oneHot(tf.tensor1d(ys, 'int32'), classNames.length);
 
 		// Train
 		await model.fit(xsTensor, ysTensor, {
