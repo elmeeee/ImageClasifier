@@ -127,14 +127,14 @@ const description = "Train custom image classification models in your browser. D
 					<div class="dataset-summary" id="datasetSummary" style="display: none;">
 						<div class="stats-grid">
 							<div class="stat-card">
-								<div class="stat-icon">📊</div>
+
 								<div class="stat-content">
 									<div class="stat-value" id="totalImages">0</div>
 									<div class="stat-label">Total Images</div>
 								</div>
 							</div>
 							<div class="stat-card">
-								<div class="stat-icon">🏷️</div>
+
 								<div class="stat-content">
 									<div class="stat-value" id="totalClasses">0</div>
 									<div class="stat-label">Classes</div>
@@ -250,7 +250,7 @@ const description = "Train custom image classification models in your browser. D
 						</svg>
 						<span>VisionAI</span>
 					</div>
-					<p class="footer-text">Powered by TensorFlow.js • Built with ❤️</p>
+					<p class="footer-text">Powered by <span class="kamy-text">KaMy</span></p>
 				</div>
 			</div>
 		</footer>
@@ -881,6 +881,16 @@ const description = "Train custom image classification models in your browser. D
 			color: var(--text-muted);
 			font-size: 14px;
 		}
+
+	.kamy-text {
+		font-weight: 700;
+		font-size: 16px;
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		letter-spacing: 0.5px;
+	}
 
 		@media (max-width: 768px) {
 			.hero-title {
