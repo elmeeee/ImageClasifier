@@ -80,19 +80,19 @@ const description = "Train custom image classification models in your browser. D
 							<svg viewBox="0 0 20 20" fill="currentColor">
 								<path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
 							</svg>
-							<span>Browser-based Training</span>
+							<span data-t="f-browser">Browser-based Training</span>
 						</div>
 						<div class="feature-badge">
 							<svg viewBox="0 0 20 20" fill="currentColor">
 								<path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
 							</svg>
-							<span>Real-time Results</span>
+							<span data-t="f-realtime">Real-time Results</span>
 						</div>
 						<div class="feature-badge">
 							<svg viewBox="0 0 20 20" fill="currentColor">
 								<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
 							</svg>
-							<span>No Server Required</span>
+							<span data-t="f-noserver">No Server Required</span>
 						</div>
 					</div>
 				</div>
@@ -109,8 +109,8 @@ const description = "Train custom image classification models in your browser. D
 							<span class="step-number">1</span>
 						</div>
 						<div class="card-title-group">
-							<h3 class="card-title">Upload Training Data</h3>
-							<p class="card-subtitle">Drag & drop a folder with images organized by class</p>
+							<h3 class="card-title" data-t="step-1-title">Upload Training Data</h3>
+							<p class="card-subtitle" data-t="step-1-subtitle">Drag & drop a folder with images organized by class</p>
 						</div>
 					</div>
 					
@@ -120,13 +120,13 @@ const description = "Train custom image classification models in your browser. D
 								<path d="M52 48v8a4 4 0 01-4 4H16a4 4 0 01-4-4v-8M44 20L32 8 20 20M32 8v32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<h4 class="upload-title">Drop your folder here</h4>
-						<p class="upload-subtitle">or click to browse files</p>
+						<h4 class="upload-title" data-t="upload-title">Drop your folder here</h4>
+						<p class="upload-subtitle" data-t="upload-subtitle">or click to browse files</p>
 						<div class="upload-hint">
 							<svg viewBox="0 0 20 20" fill="currentColor">
 								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
 							</svg>
-							<span>Organize: MyData/class1/img1.jpg, MyData/class2/img2.jpg</span>
+							<span data-t="upload-hint">Organize: MyData/class1/img1.jpg, MyData/class2/img2.jpg</span>
 						</div>
 						<input type="file" id="fileInput" webkitdirectory directory multiple accept="image/*" hidden/>
 					</div>
@@ -137,14 +137,13 @@ const description = "Train custom image classification models in your browser. D
 
 								<div class="stat-content">
 									<div class="stat-value" id="totalImages">0</div>
-									<div class="stat-label">Total Images</div>
+									<div class="stat-label" data-t="stat-images">Total Images</div>
 								</div>
 							</div>
 							<div class="stat-card">
-
 								<div class="stat-content">
 									<div class="stat-value" id="totalClasses">0</div>
-									<div class="stat-label">Classes</div>
+									<div class="stat-label" data-t="stat-classes">Classes</div>
 								</div>
 							</div>
 						</div>
@@ -153,7 +152,7 @@ const description = "Train custom image classification models in your browser. D
 							<svg viewBox="0 0 20 20" fill="currentColor">
 								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
 							</svg>
-							<span>Start Training</span>
+							<span data-t="btn-train">Start Training</span>
 						</button>
 					</div>
 				</section>
@@ -165,8 +164,8 @@ const description = "Train custom image classification models in your browser. D
 							<span class="step-number">2</span>
 						</div>
 						<div class="card-title-group">
-							<h3 class="card-title">Training in Progress</h3>
-							<p class="card-subtitle">Your model is learning from the data</p>
+							<h3 class="card-title" data-t="step-2-title">Training in Progress</h3>
+							<p class="card-subtitle" data-t="step-2-subtitle">Your model is learning from the data</p>
 						</div>
 					</div>
 
@@ -178,7 +177,7 @@ const description = "Train custom image classification models in your browser. D
 							</svg>
 							<div class="progress-content">
 								<div class="progress-percent" id="progressPercent">0%</div>
-								<div class="progress-label">Complete</div>
+								<div class="progress-label" data-t="prog-complete">Complete</div>
 							</div>
 						</div>
 						<div class="progress-details">
@@ -197,8 +196,8 @@ const description = "Train custom image classification models in your browser. D
 							<span class="step-number">3</span>
 						</div>
 						<div class="card-title-group">
-							<h3 class="card-title">Test Your Model</h3>
-							<p class="card-subtitle">Upload an image to see predictions</p>
+							<h3 class="card-title" data-t="step-3-title">Test Your Model</h3>
+							<p class="card-subtitle" data-t="step-3-subtitle">Upload an image to see predictions</p>
 						</div>
 					</div>
 
@@ -209,7 +208,7 @@ const description = "Train custom image classification models in your browser. D
 								<circle cx="22" cy="22" r="4"/>
 								<path d="M56 40L44 28 20 52" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
-							<p class="test-upload-text">Click to upload test image</p>
+							<p class="test-upload-text" data-t="test-upload">Click to upload test image</p>
 							<input type="file" id="testInput" accept="image/*" hidden/>
 						</div>
 
@@ -219,11 +218,11 @@ const description = "Train custom image classification models in your browser. D
 							</div>
 							<div class="result-details">
 								<div class="result-prediction">
-									<div class="result-label">Prediction</div>
+									<div class="result-label" data-t="res-pred">Prediction</div>
 									<div class="result-class" id="resultClass"></div>
 								</div>
 								<div class="result-confidence-wrapper">
-									<div class="result-label">Confidence</div>
+									<div class="result-label" data-t="res-conf">Confidence</div>
 									<div class="confidence-bar-wrapper">
 										<div class="confidence-bar">
 											<div class="confidence-fill" id="confidenceFill"></div>
@@ -241,7 +240,7 @@ const description = "Train custom image classification models in your browser. D
 									</div>
 									
 									<div class="encyclopedia-section" id="encyclopediaSection" style="display: none;">
-										<div class="result-label">Encyclopedia</div>
+										<div class="result-label" data-t="res-ency">Encyclopedia</div>
 										<div class="encyclopedia-box">
 											<h4 id="encyName"></h4>
 											<p id="encyDesc"></p>
@@ -273,7 +272,7 @@ const description = "Train custom image classification models in your browser. D
 						</svg>
 						<span>VisionAI</span>
 					</div>
-					<p class="footer-text">Powered by <span class="kamy-text">KaMy</span></p>
+					<p class="footer-text"><span data-t="footer-powered">Powered by</span> <span class="kamy-text">KaMy</span></p>
 				</div>
 			</div>
 		</footer>
@@ -1243,25 +1242,85 @@ const description = "Train custom image classification models in your browser. D
 				"status-ready": "VisionAI Siap",
 				"hero-title": "Latih Klasifikasi Gambar Anda",
 				"hero-desc": "Tanpa coding. Drag & drop gambar, dan biarkan AI bekerja.",
-				"res-analysis": "Wawasan Analisis AI",
+				"f-browser": "Pelatihan di Browser",
+				"f-realtime": "Hasil Real-time",
+				"f-noserver": "Tanpa Server",
+				"step-1-title": "Langkah 1: Unggah Data Latih",
+				"step-1-subtitle": "Tarik & lepas folder dengan gambar terorganisir",
+				"upload-title": "Letakkan folder Anda di sini",
+				"upload-subtitle": "atau klik untuk mencari file",
+				"upload-hint": "Aturan: NamaFolder/Gambar1.jpg",
+				"stat-images": "Total Gambar",
+				"stat-classes": "Kelas",
+				"btn-train": "Mulai Pelatihan",
+				"step-2-title": "Pelatihan Berjalan",
+				"step-2-subtitle": "Model sedang mempelajari data Anda",
+				"prog-complete": "Selesai",
+				"step-3-title": "Uji Model Anda",
+				"step-3-subtitle": "Unggah gambar untuk melihat prediksi",
+				"test-upload": "Klik untuk unggah gambar uji",
+				"res-pred": "Prediksi",
+				"res-conf": "Tingkat Keyakinan",
 				"res-preds": "Semua Prediksi",
-				"res-confidence": "Tingkat Keyakinan"
+				"res-analysis": "Wawasan Analisis",
+				"res-ency": "Ensiklopedia",
+				"footer-powered": "Didukung oleh"
 			},
 			en: {
 				"status-ready": "VisionAI Ready",
 				"hero-title": "Train Your Own Image Classifier",
 				"hero-desc": "No coding required. Just drag & drop your images, and let AI do the magic.",
-				"res-analysis": "AI Analysis Insight",
+				"f-browser": "Browser-based Training",
+				"f-realtime": "Real-time Results",
+				"f-noserver": "No Server Required",
+				"step-1-title": "Step 1: Upload Training Data",
+				"step-1-subtitle": "Drag & drop a folder with images organized",
+				"upload-title": "Drop your folder here",
+				"upload-subtitle": "or click to browse files",
+				"upload-hint": "Organize: FolderName/Img1.jpg",
+				"stat-images": "Total Images",
+				"stat-classes": "Classes",
+				"btn-train": "Start Training",
+				"step-2-title": "Training in Progress",
+				"step-2-subtitle": "Your model is learning from the data",
+				"prog-complete": "Complete",
+				"step-3-title": "Test Your Model",
+				"step-3-subtitle": "Upload an image to see predictions",
+				"test-upload": "Click to upload test image",
+				"res-pred": "Prediction",
+				"res-conf": "Confidence",
 				"res-preds": "All Predictions",
-				"res-confidence": "Confidence Level"
+				"res-analysis": "Analysis Insight",
+				"res-ency": "Encyclopedia",
+				"footer-powered": "Powered by"
 			},
 			jp: {
 				"status-ready": "準備完了",
-				"hero-title": "画像分類器のトレーニング",
+				"hero-title": "自作画像分類器のトレーニング",
 				"hero-desc": "コーディング不要。画像をアップロードしてAIに任せましょう。",
-				"res-analysis": "AI分析の洞察",
+				"f-browser": "ブラウザベース学習",
+				"f-realtime": "リアルタイム結果",
+				"f-noserver": "サーバー不要",
+				"step-1-title": "ステップ 1: トレーニングデータのアップロード",
+				"step-1-subtitle": "整理された画像フォルダをドラッグ＆ドロップ",
+				"upload-title": "ここにフォルダをドロップ",
+				"upload-subtitle": "またはクリックして選択",
+				"upload-hint": "ルール: フォルダ名/画像1.jpg",
+				"stat-images": "総画像数",
+				"stat-classes": "クラス数",
+				"btn-train": "トレーニング開始",
+				"step-2-title": "トレーニング中",
+				"step-2-subtitle": "モデルが学習しています",
+				"prog-complete": "完了",
+				"step-3-title": "モデルをテストする",
+				"step-3-subtitle": "画像をアップロードして結果を確認",
+				"test-upload": "テスト画像をアップロード",
+				"res-pred": "予測結果",
+				"res-conf": "信頼度",
 				"res-preds": "すべての予測",
-				"res-confidence": "信頼度"
+				"res-analysis": "分析の洞察",
+				"res-ency": "百科事典",
+				"footer-powered": "提供元"
 			}
 		};
 
@@ -1349,7 +1408,10 @@ const description = "Train custom image classification models in your browser. D
 			currentGlobalLang = lang;
 			document.querySelectorAll('[data-t]').forEach(el => {
 				const key = el.getAttribute('data-t');
-				if (UI_TRANSLATIONS[lang][key]) el.textContent = UI_TRANSLATIONS[lang][key];
+				if (UI_TRANSLATIONS[lang][key]) {
+					if (el.tagName === 'H2' || el.tagName === 'P') el.innerHTML = UI_TRANSLATIONS[lang][key];
+					else el.textContent = UI_TRANSLATIONS[lang][key];
+				}
 			});
 			updateResultUI(lang);
 		};
