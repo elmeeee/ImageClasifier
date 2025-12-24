@@ -121,7 +121,7 @@ const description = "Train custom image classification models in your browser. D
 							</svg>
 							<span>Organize: MyData/class1/img1.jpg, MyData/class2/img2.jpg</span>
 						</div>
-						<input type="file" id="fileInput" multiple accept="image/*" hidden/>
+						<input type="file" id="fileInput" webkitdirectory directory multiple accept="image/*" hidden/>
 					</div>
 
 					<div class="dataset-summary" id="datasetSummary" style="display: none;">
@@ -924,14 +924,14 @@ const description = "Train custom image classification models in your browser. D
 		const datasetSummary = document.getElementById('datasetSummary');
 		const startTrainBtn = document.getElementById('startTrainBtn');
 
+		// Prevent default drag behavior on entire document
+		['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+			document.body.addEventListener(eventName, (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			}, false);
+		});
 
-t// Prevent default drag behavior on entire document
-t['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-ttdocument.body.addEventListener(eventName, (e) => {
-ttte.preventDefault();
-ttte.stopPropagation();
-tt}, false);
-t});
 
 		uploadZone.addEventListener('click', () => fileInput.click());
 
