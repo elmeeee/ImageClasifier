@@ -34,6 +34,10 @@ const description = "Train custom image classification models in your browser. D
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<!-- VisionAI Power Core: TensorFlow + MobileNet -->
+	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+	<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 	<div class="app">
@@ -1432,22 +1436,18 @@ const description = "Train custom image classification models in your browser. D
 
 		.opencode-btn svg {
 			width: 14px;
-```
 			height: 14px;
 		}
 	</style>
 
-	<!-- VisionAI Power Core: TensorFlow + MobileNet -->
-	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
-	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
-	<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<!-- MobileNet is loaded in HEAD for maximum reliability -->
 
 	<script is:inline>
 		let uploadedDataset = {};
 		let trainedModel = null;
 		let featureExtractor = null;
 		let classNames = [];
-		let aiModel = null; // For Deep Analysis (Standard MobileNet)
+		let aiModel = null;
 
 		const uploadZone = document.getElementById('uploadZone');
 		const fileInput = document.getElementById('fileInput');
@@ -1572,20 +1572,10 @@ const description = "Train custom image classification models in your browser. D
 			}, 100);
 
 			try {
-				// Safety check for Library
-				const getMobileNet = () => {
-					if (typeof mobilenet !== 'undefined') return mobilenet;
-					if (window.tf && window.tf.mobilenet) return window.tf.mobilenet;
-					if (window.mobilenet) return window.mobilenet;
-					return null;
-				};
-
 				// 1. Load Feature Extractor (AI Base)
 				document.getElementById('progressText').textContent = 'Initializing AI Brain...';
 				if (!featureExtractor) {
-					const mobileNetLib = getMobileNet();
-					if (!mobileNetLib) throw new Error("AI core engine (MobileNet) not found. Please refresh.");
-					featureExtractor = await mobileNetLib.load({ version: 2, alpha: 1.0 });
+					featureExtractor = await mobilenet.load({ version: 2, alpha: 1.0 });
 				}
 
 				// 2. Prepare Data with Augmentation & AI Feature Extraction
@@ -2043,18 +2033,8 @@ const description = "Train custom image classification models in your browser. D
 			aiDeepResult.style.display = 'none';
 
 			try {
-				// Safety utility to find mobilenet in any global namespace
-				const getMobileNet = () => {
-					if (typeof mobilenet !== 'undefined') return mobilenet;
-					if (window.tf && window.tf.mobilenet) return window.tf.mobilenet;
-					if (window.mobilenet) return window.mobilenet;
-					return null;
-				};
-
 				if (!aiModel) {
-					const mobileNetLib = getMobileNet();
-					if (!mobileNetLib) throw new Error("Vision AI Library not loaded yet.");
-					aiModel = await mobileNetLib.load();
+					aiModel = await mobilenet.load();
 				}
 				
 				const predictions = await aiModel.classify(imgElement);
