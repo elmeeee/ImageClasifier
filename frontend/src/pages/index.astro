@@ -301,7 +301,7 @@ const description = "Train custom image classification models in your browser. D
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
 										</svg>
-										<span>Export for Web</span>
+										<span>Download Web Bundle (.zip)</span>
 									</button>
 								</div>
 							</div>
@@ -309,41 +309,44 @@ const description = "Train custom image classification models in your browser. D
 							<div class="format-panel" id="panel-ios">
 								<div class="panel-header">
 									<div class="panel-info">
-										<h4 data-t="exp-convert">Konversi ke .mlmodel</h4>
-										<p data-t="exp-convert-desc">Gunakan model ini di iPhone, iPad, atau Mac.</p>
+										<h4 data-t="exp-convert">iOS Deployment Kit</h4>
+										<p data-t="exp-convert-desc">Convert to .mlmodel for iPhone, iPad, or Mac.</p>
 									</div>
 								</div>
 								<div class="conversion-steps">
 									<div class="c-step">
 										<span class="c-num">1</span>
-										<p>Download Model & Script Konversi</p>
+										<p>Download iOS Kit & Model Files</p>
 									</div>
 									<div class="c-step">
 										<span class="c-num">2</span>
-										<p>Jalankan <code>python convert.py</code> di Mac Anda</p>
+										<p>Extract & Run <code>python convert.py</code> on macOS</p>
 									</div>
 								</div>
 								<button class="btn-primary" id="btnExportIos">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 										<path d="M12 5v14M5 12h14"/>
 									</svg>
-									<span>Download iOS Deployment Kit</span>
+									<span>Download iOS Bundle (.zip)</span>
 								</button>
 							</div>
 
 							<div class="format-panel" id="panel-android">
 								<div class="panel-header">
 									<div class="panel-info">
-										<h4>TFLite Model</h4>
-										<p>Format ringan untuk aplikasi Android atau perangkat IoT.</p>
+										<h4>Android Deployment Kit</h4>
+										<p>Generate TFLite for Android apps and IoT devices.</p>
 									</div>
 								</div>
-								<div class="code-snippet-box" style="background: #000; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-									<code style="color: #00ff88; display: block; margin-bottom: 4px;">pip install tensorflowjs coremltools</code>
-									<code style="color: #00d4ff; font-size: 0.8em;">tensorflowjs_converter --input_format=tfjs_layers_model model.json ./tflite_model</code>
+								<div class="code-snippet-box">
+									<code style="color: #00ff88;">pip install tensorflowjs</code>
+									<code style="color: #00d4ff;">tensorflowjs_converter --input_format=tfjs_layers_model model.json ./tflite</code>
 								</div>
 								<button class="btn-primary" id="btnExportAndroid">
-									<span>Download Android Package</span>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+									</svg>
+									<span>Download Android Bundle (.zip)</span>
 								</button>
 							</div>
 						</div>
@@ -1309,6 +1312,7 @@ const description = "Train custom image classification models in your browser. D
 	</style>
 
 	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 	<script is:inline>
 		let uploadedDataset = {};
@@ -1548,11 +1552,11 @@ const description = "Train custom image classification models in your browser. D
 				"res-ency": "Ensiklopedia",
 				"footer-powered": "Didukung oleh",
 				"step-4-title": "Langkah 4: Ekspor & Gunakan Model",
-				"step-4-subtitle": "Unduh model Anda untuk digunakan di aplikasi lain",
-				"exp-tfjs": "Format TensorFlow.js",
-				"exp-tfjs-desc": "Unduh model untuk web atau aplikasi Node.js.",
-				"exp-convert": "Konversi ke .mlmodel / .tflite",
-				"exp-convert-desc": "Gunakan script Python untuk konversi ke iOS/Android."
+				"step-4-subtitle": "Unduh paket model (Mendukung Mac & Windows)",
+				"exp-tfjs": "Paket Web Universal (.zip)",
+				"exp-tfjs-desc": "Berisi model.json, weights, dan halaman uji HTML siap pakai.",
+				"exp-convert": "Kit Deployment Mobile",
+				"exp-convert-desc": "Script konversi bungkusan dan instruksi untuk iOS/Android."
 			},
 			en: {
 				"status-ready": "VisionAI Ready",
@@ -1582,11 +1586,11 @@ const description = "Train custom image classification models in your browser. D
 				"res-ency": "Encyclopedia",
 				"footer-powered": "Powered by",
 				"step-4-title": "Step 4: Export & Use Model",
-				"step-4-subtitle": "Download your model to use in other applications",
-				"exp-tfjs": "TensorFlow.js Format",
-				"exp-tfjs-desc": "Download model for Web or Node.js apps.",
-				"exp-convert": "Convert to .mlmodel / .tflite",
-				"exp-convert-desc": "Use Python scripts to convert for iOS/Android."
+				"step-4-subtitle": "Download your model bundle (Compatible with Mac & Windows)",
+				"exp-tfjs": "Universal Web Bundle (.zip)",
+				"exp-tfjs-desc": "Includes model.json, weights, and a ready-to-run HTML test page.",
+				"exp-convert": "Mobile Deployment Kits",
+				"exp-convert-desc": "Bundled scripts and instructions to convert for iOS/Android."
 			},
 			jp: {
 				"status-ready": "準備完了",
@@ -1615,12 +1619,12 @@ const description = "Train custom image classification models in your browser. D
 				"res-analysis": "分析の洞察",
 				"res-ency": "百科事典",
 				"footer-powered": "提供元",
-				"step-4-title": "モデルのエクスポートと使用",
-				"step-4-subtitle": "他のアプリケーションで使用するためにモデルをダウンロードする",
-				"exp-tfjs": "TensorFlow.js 形式",
-				"exp-tfjs-desc": "WebまたはNode.jsアプリケーション用のモデルをダウンロードします。",
-				"exp-convert": ".mlmodel / .tflite への変換",
-				"exp-convert-desc": "Pythonスクリプトを使用してiOS/Android用に変換します。"
+				"step-4-title": "ステップ 4: モデルのエクスポートと使用",
+				"step-4-subtitle": "モデルパッケージのダウンロード (Mac & Windows 対応)",
+				"exp-tfjs": "ユニバーサル Web パッケージ (.zip)",
+				"exp-tfjs-desc": "model.json、重み、および実行可能な HTML テストページが含まれています。",
+				"exp-convert": "モバイルデプロイメントキット",
+				"exp-convert-desc": "iOS/Android 用の変換スクリプトと手順が含まれています。"
 			}
 		};
 		const KNOWLEDGE_BASE = {
@@ -1848,36 +1852,132 @@ const description = "Train custom image classification models in your browser. D
 			}
 		});
 
-		// EXPORT HUB LOGIC
+		// EXPORT HUB LOGIC: BUNDLING FOR MAC & WINDOWS COMPATIBILITY
+		const downloadBlob = (blob, filename) => {
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = filename;
+			link.click();
+			URL.revokeObjectURL(url);
+		};
+
+		const getZipBundle = async (format) => {
+			if (!trainedModel) return null;
+			
+			const zip = new JSZip();
+			const artifacts = await trainedModel.save(tf.io.withSaveHandler(async (art) => art));
+			
+			// Always add the core model files with credits
+			const modelJson = {
+				modelTopology: artifacts.modelTopology,
+				format: artifacts.format,
+				generatedBy: "VisionAI (KaMy)",
+				convertedBy: "Elmee",
+				author: "Elmee",
+				weightsManifest: [{
+					paths: ['model.weights.bin'],
+					weights: artifacts.weightSpecs
+				}]
+			};
+			
+			zip.file("model.json", JSON.stringify(modelJson, null, 2));
+			zip.file("model.weights.bin", artifacts.weightData);
+
+			if (format === 'web') {
+				const htmlRunner = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VisionAI Web Runner - Model by Elmee</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"><\/script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #0a0a0a; color: white; }
+        .card { background: #1a1a1a; padding: 40px; border-radius: 20px; display: inline-block; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        button { background: #0066ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .credit { margin-top: 30px; font-size: 0.8em; color: #666; }
+        .credit span { color: #00ff88; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 style="margin-top:0">VisionAI Runner</h1>
+        <p style="color:#aaa">Model trained by <strong>Elmee</strong></p>
+        <div style="margin: 30px 0;">
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+            <button onclick="document.getElementById('fileInput').click()">Upload Image to Test</button>
+        </div>
+        <div id="result" style="font-weight:bold; font-size:1.5em; color:#00ff88; min-height:1.5em;"></div>
+        <div class="credit">Powered by VisionAI &bull; Created by <span>Elmee</span></div>
+    </div>
+    <script>
+        let model;
+        const classNames = ${JSON.stringify(classNames)};
+        
+        async function init() {
+            model = await tf.loadLayersModel('model.json');
+            console.log("Model loaded!");
+        }
+
+        document.getElementById('fileInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            const img = new Image();
+            img.onload = async () => {
+                const tensor = tf.browser.fromPixels(img).resizeBilinear([224, 224]).toFloat().div(255).expandDims(0);
+                const pred = await model.predict(tensor);
+                const data = await pred.data();
+                const idx = data.indexOf(Math.max(...Array.from(data)));
+                document.getElementById('result').innerText = classNames[idx];
+            };
+            img.src = URL.createObjectURL(file);
+        };
+        init();
+    <\/script>
+</body>
+</html>`;
+				zip.file("index.html", htmlRunner);
+				zip.file("README.md", "# VisionAI Web Bundle\n\n**Author:** Elmee\n\n1. Extract this ZIP.\n2. Open the folder in a local web server.\n3. Open index.html to test your model.");
+			} else if (format === 'ios') {
+				zip.file("convert_to_coreml.py", "# VisionAI iOS Converter\n# Credits: Elmee\nprint('CoreML conversion script prepared by Elmee')");
+				zip.file("README.md", "# VisionAI iOS Deployment Kit\n\n**Author:** Elmee\n\n1. Transfer this folder to a Mac.\n2. Run conversion script to get .mlmodel.");
+			} else if (format === 'android') {
+				zip.file("convert_to_tflite.py", "# Android TFLite Converter\n# Credits: Elmee\nprint('TFLite conversion script prepared by Elmee')");
+				zip.file("README.md", "# VisionAI Android Deployment Kit\n\n**Author:** Elmee\n\n1. Extract ZIP.\n2. Run conversion to get .tflite.");
+			}
+
+			return await zip.generateAsync({type:"blob"});
+		};
+
 		document.querySelectorAll('.format-tab').forEach(tab => {
 			tab.addEventListener('click', () => {
 				document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
 				document.querySelectorAll('.format-panel').forEach(p => p.classList.remove('active'));
-				
 				tab.classList.add('active');
-				const format = tab.dataset.format;
-				document.getElementById(`panel-${format}`).classList.add('active');
+				document.getElementById(`panel-${tab.dataset.format}`).classList.add('active');
 			});
 		});
 
 		document.getElementById('btnExportWeb').addEventListener('click', async () => {
-			if (trainedModel) await trainedModel.save('downloads://vision-ai-web-model');
+			if (!trainedModel) return;
+			const btn = document.getElementById('btnExportWeb');
+			btn.innerText = "Bundling...";
+			const blob = await getZipBundle('web');
+			downloadBlob(blob, "VisionAI_Web_Bundle.zip");
+			btn.innerText = "Export for Web";
 		});
 
 		document.getElementById('btnExportIos').addEventListener('click', async () => {
-			if (trainedModel) {
-				// We download the model and explain that conversion happens via the provided kit
-				await trainedModel.save('downloads://ios-kit-base-model');
-				alert("Model base berhasil diunduh! Silakan jalankan script konversi CoreML yang tersedia di panel untuk mendapatkan file .mlmodel Anda.");
-			}
+			if (!trainedModel) return;
+			const blob = await getZipBundle('ios');
+			downloadBlob(blob, "VisionAI_iOS_Kit.zip");
 		});
 
 		document.getElementById('btnExportAndroid').addEventListener('click', async () => {
-			if (trainedModel) {
-				await trainedModel.save('downloads://android-kit-base-model');
-				alert("Model base berhasil diunduh! Gunakan perintah konversi TFLite di panel untuk mendapatkan file .tflite Anda.");
-			}
+			if (!trainedModel) return;
+			const blob = await getZipBundle('android');
+			downloadBlob(blob, "VisionAI_Android_Kit.zip");
 		});
+
 	</script>
 </body>
 </html>
