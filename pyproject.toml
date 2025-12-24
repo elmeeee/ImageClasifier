@@ -9,3 +9,5 @@ requires-python = ">=3.10,<3.11"
 
 [tool.setuptools]
 py-modules = []
+
+# Note: Dependencies are managed in requirements.txt for Vercel deployment
