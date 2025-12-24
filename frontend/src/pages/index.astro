@@ -1334,10 +1334,20 @@ const description = "Train custom image classification models in your browser. D
 				en: { name: "2,000 Rupiah Note", desc: "The 2,000 Rupiah note (2022) features Mohammad Hoesni Thamrin. The reverse shows the Plate Dance, Sianok Canyon, and Jeumpa Flower." },
 				jp: { name: "2,000ルピア紙幣", desc: "2,000ルピア紙幣は、ムハンマド・フスニ・タムリンを描いています。裏面には皿回し舞踊が描かれています。" }
 			},
-			"5000": {
-				id: { name: "Uang 5,000 Rupiah", desc: "Uang kertas Rp5.000 (2022) menampilkan Dr. K.H. Idham Chalid. Bagian belakangnya menampilkan Tari Gambyong, Gunung Bromo, dan Bunga Sedap Malam." },
-				en: { name: "5,000 Rupiah Note", desc: "The 5,000 Rupiah note (2022) features Dr. K.H. Idham Chalid. The reverse depicts Gambyong Dance, Mount Bromo, and Tuberose." },
-				jp: { name: "5,000ルピア紙幣", desc: "5,000ルピア紙幣は、イドハム・チャリド博士を描いています。裏面にはブロモ山などが描かれています。" }
+			"100000": {
+				id: { name: "Uang 100,000 Rupiah", desc: "Uang kertas Rp100.000 menampilkan pahlawan Dr. (H.C.) Ir. Soekarno dan Drs. Mohammad Hatta. Ini adalah nominal tertinggi di Indonesia." },
+				en: { name: "100,000 Rupiah Note", desc: "The highest denomination in Indonesia, featuring the founding fathers Soekarno and Hatta." },
+				jp: { name: "100,000ルピア紙幣", desc: "インドネシアの最高額紙幣で、建国の父スカルノとハッタが描かれています。" }
+			},
+			"laptop": {
+				id: { name: "Laptop / Komputer Portabel", desc: "Perangkat elektronik bergerak yang mengintegrasikan layar, keyboard, dan prosesor dalam satu unit untuk produktivitas." },
+				en: { name: "Laptop Computer", desc: "A portable personal computer powered by a battery or AC cord, designed for mobile productivity." },
+				jp: { name: "ノートパソコン", desc: "持ち運び可能なパーソナルコンピュータで、バッテリーまたはAC電源で動作します。" }
+			},
+			"phone": {
+				id: { name: "Smartphone / Ponsel Pintar", desc: "Perangkat telekomunikasi modern yang menggabungkan fungsi telepon, kamera, dan komputer dalam genggaman." },
+				en: { name: "Smartphone", desc: "A mobile device that combines cellular and mobile computing functions into one unit." },
+				jp: { name: "スマートフォン", desc: "携帯電話とモバイルコンピューティング機能を1つのユニットに結合したモバイルデバイス。" }
 			}
 		};
 
@@ -1365,71 +1375,85 @@ const description = "Train custom image classification models in your browser. D
 					`).join('');
 			}
 
-			// AI INSIGHT: TRANSPARENT LOGIC
 			const explanations = {
 				id: {
-					vhigh: `AI Sangat Yakin! Dari dataset yang lo kasih, benda ini punya kemiripan pola visual hingga 90%+ dengan label <span class="insight-highlight">"${predictedClass}"</span>.`,
-					high: `AI menebak ini <span class="insight-highlight">"${predictedClass}"</span>. Gua ngeliat ada kemiripan tekstur dan warna yang mirip sama foto-foto yang lo upload tadi.`,
-					low: `AI agak ragu, tapi kalau disuruh milih dari data lo, ini paling mendekati <span class="insight-highlight">"${predictedClass}"</span>.`,
-					warning: `<br/><small style="opacity:0.7; font-style: italic;">*Catatan: Gua cuma bisa milih dari apa yang lo latih. Kalau lo kasih benda asing, gua bakal tetep milih label yang paling "mirip" pola visualnya.*</small>`
+					vhigh: `AI Sangat Yakin! Ini adalah <span class="insight-highlight">"${predictedClass}"</span>.`,
+					high: `AI memprediksi ini adalah <span class="insight-highlight">"${predictedClass}"</span>.`,
+					low: `AI menebak ini <span class="insight-highlight">"${predictedClass}"</span> dengan ragu.`,
+					warning: `<br/><small style="opacity:0.6;">*Berdasarkan pola visual dari dataset Anda.</small>`
 				},
 				en: {
-					vhigh: `AI is Very Confident! Based on your training data, this object has 90%+ visual similarity with <span class="insight-highlight">"${predictedClass}"</span>.`,
-					high: `AI predicts this is <span class="insight-highlight">"${predictedClass}"</span>. I see texture and color patterns that match the images you uploaded.`,
-					low: `AI is unsure, but out of your dataset, this is the closest match to <span class="insight-highlight">"${predictedClass}"</span>.`,
-					warning: `<br/><small style="opacity:0.7; font-style: italic;">*Note: I only know what you taught me. If you provide something new, I will still pick the class that looks most "similar" visually.*</small>`
+					vhigh: `AI is Very Confident! This is <span class="insight-highlight">"${predictedClass}"</span>.`,
+					high: `AI predicts this is <span class="insight-highlight">"${predictedClass}"</span>.`,
+					low: `AI guesses this is <span class="insight-highlight">"${predictedClass}"</span> with low confidence.`,
+					warning: `<br/><small style="opacity:0.6;">*Based on visual patterns from your dataset.</small>`
 				},
 				jp: {
-					vhigh: `AIは非常に自信があります！提供されたデータセットに基づくと、このオブジェクトは<span class="insight-highlight">"${predictedClass}"</span>と90%以上の視覚的類似性があります。`,
-					high: `AIはこれが <span class="insight-highlight">"${predictedClass}"</span> だと予測しています。アップロードされた画像とテクスチャや色が一致しています。`,
-					low: `AIは確信が持てませんが、提供されたデータの中では、これが <span class="insight-highlight">"${predictedClass}"</span> に最も近いです。`,
-					warning: `<br/><small style="opacity:0.7; font-style: italic;">*注：私はあなたが教えたことしか知りません。新しいものが提供されても、視覚的に最も「似ている」クラスを選択します。*</small>`
+					vhigh: `AIは非常に自信があります！これは <span class="insight-highlight">"${predictedClass}"</span> です。`,
+					high: `AIはこれが <span class="insight-highlight">"${predictedClass}"</span> だと予測しています。`,
+					low: `AIはこれが <span class="insight-highlight">"${predictedClass}"</span> だと低信頼度で推測しています。`,
+					warning: `<br/><small style="opacity:0.6;">*データセットの視覚的パターンに基づいています。</small>`
 				}
 			};
 
 			const exp = explanations[lang];
-			let baseMsg = lastConfidence > 90 ? exp.vhigh : (lastConfidence > 70 ? exp.high : exp.low);
-			insightText.innerHTML = baseMsg + exp.warning;
+			insightText.innerHTML = (lastConfidence > 90 ? exp.vhigh : (lastConfidence > 70 ? exp.high : exp.low)) + exp.warning;
 
-			// ENCYCLOPEDIA: DATA BASED + HISTORY
-			let title = '';
-			let description = '';
-			
+			// UNIVERSAL ENCYCLOPEDIA LOGIC
 			let bonusMatch = null;
-			// Smarter Matching: Check if label contains nominal numbers (1000, 2000, etc)
-			const labelDigits = predictedClass.match(/\d+/g)?.join('') || '';
+			const cleanName = predictedClass.toLowerCase();
 			
 			for (let key in KNOWLEDGE_BASE) {
-				if (predictedClass.includes(key) || (labelDigits && labelDigits.includes(key))) {
+				if (cleanName.includes(key)) {
 					bonusMatch = KNOWLEDGE_BASE[key][lang];
 					break;
 				}
 			}
 
 			if (bonusMatch) {
-				title = bonusMatch.name;
-				description = bonusMatch.desc;
+				encyName.textContent = bonusMatch.name;
+				encyDesc.textContent = bonusMatch.desc;
 			} else {
-				const genericExpl = {
+				const universalDesc = {
 					id: {
-						title: `Analisis Data: ${predictedClass}`,
-						desc: `Benda ini dideteksi sebagai "${predictedClass}" karena model menemukan fitur unik (garis, kontras, atau komposisi) yang identik dengan sampel yang lo kasih di folder tersebut. Semakin banyak foto yang lo upload, semakin akurat gua ngebedain benda ini dari yang lain.`
+						title: `Identitas Objek: ${predictedClass}`,
+						desc: `Anda telah melatih VisionAI untuk mengenali "${predictedClass}". Dalam model ini, objek tersebut didefinisikan melalui karakteristik visual yang unik dari data latih Anda.`
 					},
 					en: {
-						title: `Data Analysis: ${predictedClass}`,
-						desc: `This object is detected as "${predictedClass}" because the model found unique features (lines, contrast, or composition) identical to the samples you provided in that folder. More training images help me distinguish this more accurately.`
+						title: `Object Identity: ${predictedClass}`,
+						desc: `You have trained VisionAI to recognize "${predictedClass}". In this model, the object is defined by unique visual characteristics learned from your training data.`
 					},
 					jp: {
-						title: `データ分析: ${predictedClass}`,
-						desc: `このオブジェクトは、そのフォルダに提供されたサンプルと同一の独自の機能（ライン、コントラスト、または構成）をモデルが見つけたため、「${predictedClass}」として検出されました。トレーニング画像が多いほど、正確に区別できます。`
+						title: `オブジェクトの識別: ${predictedClass}`,
+						desc: `あなたはVisionAIに「${predictedClass}」を認識するようにトレーニングしました。このモデルでは、オブジェクトはトレーニングデータから学習した独自の視覚的特徴によって定義されます。`
 					}
 				};
-				title = genericExpl[lang].title;
-				description = genericExpl[lang].desc;
+				const ud = universalDesc[lang];
+				encyName.textContent = ud.title;
+				encyDesc.textContent = ud.desc;
 			}
 
-			encyName.textContent = title;
-			encyDesc.textContent = description;
+			// Add Wiki Lookup Link for EVERYTHING
+			const wikiLang = lang === 'id' ? 'id' : (lang === 'jp' ? 'ja' : 'en');
+			const wikiBtnLabel = { id: 'Pelajari di Wikipedia', en: 'Learn on Wikipedia', jp: 'ウィキペディアで学ぶ' };
+			const wikiUrl = `https://${wikiLang}.wikipedia.org/wiki/${encodeURIComponent(predictedClass)}`;
+			
+			const existingWiki = document.getElementById('wikiLinkBtn');
+			if (existingWiki) existingWiki.remove();
+
+			const wikiBtn = document.createElement('a');
+			wikiBtn.id = 'wikiLinkBtn';
+			wikiBtn.href = wikiUrl;
+			wikiBtn.target = '_blank';
+			wikiBtn.className = 'btn-wiki';
+			wikiBtn.innerHTML = `
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+				</svg>
+				${wikiBtnLabel[lang]}
+			`;
+			encyDesc.parentElement.appendChild(wikiBtn);
+
 			encySection.style.display = 'block';
 		};
 
