@@ -231,6 +231,7 @@ const description = "Train custom image classification models in your browser. D
 									</div>
 								</div>
 								<div class="all-predictions" id="allPredictions"></div>
+								
 								<div class="result-insights" id="resultInsights" style="display: none;">
 									<div class="insight-header">
 										<div class="result-label" data-t="res-analysis">Analysis Insight</div>
@@ -239,6 +240,28 @@ const description = "Train custom image classification models in your browser. D
 										<p id="insightText"></p>
 									</div>
 									
+									<!-- New AI Deep Analysis Section -->
+									<div class="ai-deep-check" id="aiDeepCheck">
+										<div class="result-label">Deep Analysis (via OpenCode AI)</div>
+										<div class="deep-check-box">
+											<div class="check-loading" id="aiLoading" style="display: none;">
+												<div class="spinner"></div>
+												<span>Deeply scanning image pattern...</span>
+											</div>
+											<div class="check-result" id="aiDeepResult" style="display: none;">
+												<p class="ai-desc" id="aiDesc"></p>
+												<div class="ai-tags" id="aiTags"></div>
+												<a href="https://opencode.ai" target="_blank" class="opencode-btn">
+													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+														<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+														<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+													</svg>
+													<span>Refine with OpenCode AI</span>
+												</a>
+											</div>
+										</div>
+									</div>
+
 									<div class="encyclopedia-section" id="encyclopediaSection" style="display: none;">
 										<div class="result-label" data-t="res-ency">Encyclopedia</div>
 										<div class="encyclopedia-box">
@@ -1309,15 +1332,120 @@ const description = "Train custom image classification models in your browser. D
 				margin: 0 auto;
 			}
 		}
+
+		/* AI Deep Check Styles */
+		.ai-deep-check {
+			margin-top: 24px;
+			padding-top: 24px;
+			border-top: 1px dashed var(--border);
+		}
+
+		.deep-check-box {
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 20px;
+			margin-top: 12px;
+			min-height: 100px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.check-loading {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 12px;
+			color: var(--text-secondary);
+		}
+
+		.spinner {
+			width: 24px;
+			height: 24px;
+			border: 2px solid rgba(0, 102, 255, 0.1);
+			border-top-color: var(--primary);
+			border-radius: 50%;
+			animation: spin 0.8s linear infinite;
+		}
+
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+
+		.ai-desc {
+			font-size: 15px;
+			margin-bottom: 16px;
+			color: var(--text-secondary);
+		}
+
+		.ai-highlight {
+			color: var(--success);
+			font-weight: 700;
+			text-transform: capitalize;
+		}
+
+		.ai-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-bottom: 20px;
+		}
+
+		.ai-tag {
+			background: var(--surface-elevated);
+			padding: 6px 12px;
+			border-radius: 8px;
+			font-size: 13px;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			border: 1px solid var(--border);
+		}
+
+		.ai-tag small {
+			color: var(--primary);
+			font-weight: 700;
+			opacity: 0.8;
+		}
+
+		.opencode-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			background: rgba(0, 102, 255, 0.1);
+			border: 1px solid var(--primary);
+			color: var(--primary);
+			text-decoration: none;
+			padding: 10px 16px;
+			border-radius: 8px;
+			font-size: 13px;
+			font-weight: 600;
+			transition: all 0.2s;
+		}
+
+		.opencode-btn:hover {
+			background: var(--primary);
+			color: white;
+		}
+
+		.opencode-btn svg {
+			width: 14px;
+			height: 14px;
+		}
 	</style>
 
 	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 	<script is:inline>
 		let uploadedDataset = {};
 		let trainedModel = null;
+		let featureExtractor = null;
 		let classNames = [];
+		let aiModel = null; // For Deep Analysis (Standard MobileNet)
 
 		const uploadZone = document.getElementById('uploadZone');
 		const fileInput = document.getElementById('fileInput');
@@ -1438,7 +1566,21 @@ const description = "Train custom image classification models in your browser. D
 				document.getElementById('trainSection').scrollIntoView({ behavior: 'smooth' });
 			}, 100);
 
-			const xs = [];
+			// 1. Load Feature Extractor (AI-powered Training)
+			document.getElementById('progressText').textContent = 'Loading AI Base Model...';
+			if (!featureExtractor) {
+				const baseModel = await mobilenet.load();
+				// Get the internal model to use for feature extraction
+				// We use the output of the global average pooling layer
+				featureExtractor = {
+					model: baseModel,
+					predict: (img) => baseModel.infer(img, true)
+				};
+			}
+
+			// 2. Prepare Features
+			document.getElementById('progressText').textContent = 'Extracting AI features from images...';
+			const features = [];
 			const ys = [];
 
 			for (let i = 0; i < classNames.length; i++) {
@@ -1446,16 +1588,21 @@ const description = "Train custom image classification models in your browser. D
 				const images = uploadedDataset[className];
 
 				for (const file of images) {
-					const img = await loadImage(file);
-					xs.push(img);
+					const imgTensor = await loadImage(file);
+					const feature = featureExtractor.predict(imgTensor);
+					features.push(feature);
 					ys.push(i);
+					imgTensor.dispose();
 				}
 			}
 
+			// 3. Define the Head Model (Transfer Learning)
+			const xsTensor = tf.concat(features);
+			const ysTensor = tf.oneHot(tf.tensor1d(ys, 'int32'), classNames.length);
+
 			const model = tf.sequential({
 				layers: [
-					tf.layers.flatten({ inputShape: [224, 224, 3] }),
-					tf.layers.dense({ units: 128, activation: 'relu' }),
+					tf.layers.dense({ units: 128, activation: 'relu', inputShape: [xsTensor.shape[1]] }),
 					tf.layers.dropout({ rate: 0.2 }),
 					tf.layers.dense({ units: classNames.length, activation: 'softmax' })
 				]
@@ -1829,8 +1976,9 @@ const description = "Train custom image classification models in your browser. D
 					document.getElementById('testImage').src = e.target.result;
 					const testImg = new Image();
 					testImg.onload = async () => {
-						const tensor = tf.browser.fromPixels(testImg).resizeBilinear([224, 224]).toFloat().div(255.0).expandDims(0);
-						const predictions = await trainedModel.predict(tensor);
+						const testImgTensor = tf.browser.fromPixels(testImg).resizeBilinear([224, 224]).toFloat().div(255.0);
+						const feature = featureExtractor.predict(testImgTensor.expandDims(0));
+						const predictions = await trainedModel.predict(feature);
 						lastProbabilities = await predictions.data();
 						lastMaxIndex = lastProbabilities.indexOf(Math.max(...Array.from(lastProbabilities)));
 						lastConfidence = lastProbabilities[lastMaxIndex] * 100;
@@ -1841,9 +1989,14 @@ const description = "Train custom image classification models in your browser. D
 
 						testResult.style.display = 'block';
 						document.getElementById('resultInsights').style.display = 'block';
+						
+						// Run Deep AI Check (Using standard MobileNet for 1000 classes)
+						runDeepAICheck(testImg);
+						
 						updateResultUI(currentGlobalLang);
 
-						tensor.dispose();
+						testImgTensor.dispose();
+						feature.dispose();
 						predictions.dispose();
 					};
 					testImg.src = e.target.result;
@@ -1851,6 +2004,44 @@ const description = "Train custom image classification models in your browser. D
 				reader.readAsDataURL(file);
 			}
 		});
+
+		async function runDeepAICheck(imgElement) {
+			const aiLoading = document.getElementById('aiLoading');
+			const aiDeepResult = document.getElementById('aiDeepResult');
+			const aiDesc = document.getElementById('aiDesc');
+			const aiTags = document.getElementById('aiTags');
+
+			aiLoading.style.display = 'flex';
+			aiDeepResult.style.display = 'none';
+
+			try {
+				if (!aiModel) {
+					aiModel = await mobilenet.load();
+				}
+				
+				const predictions = await aiModel.classify(imgElement);
+				
+				if (predictions && predictions.length > 0) {
+					const top = predictions[0];
+					const others = predictions.slice(1);
+					
+					aiDesc.innerHTML = `Vision AI analysis detects this as <span class="ai-highlight">${top.className}</span> with ${Math.round(top.probability * 100)}% certainty levels.`;
+					
+					aiTags.innerHTML = predictions.map(p => `
+						<div class="ai-tag">
+							<span>${p.className.split(',')[0]}</span>
+							<small>${Math.round(p.probability * 100)}%</small>
+						</div>
+					`).join('');
+				}
+			} catch (err) {
+				console.error("AI Check Error:", err);
+				aiDesc.textContent = "AI Vision insight temporarily unavailable.";
+			} finally {
+				aiLoading.style.display = 'none';
+				aiDeepResult.style.display = 'block';
+			}
+		}
 
 		// EXPORT HUB LOGIC: BUNDLING FOR MAC & WINDOWS COMPATIBILITY
 		const downloadBlob = (blob, filename) => {
