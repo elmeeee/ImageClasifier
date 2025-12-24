@@ -924,6 +924,15 @@ const description = "Train custom image classification models in your browser. D
 		const datasetSummary = document.getElementById('datasetSummary');
 		const startTrainBtn = document.getElementById('startTrainBtn');
 
+
+t// Prevent default drag behavior on entire document
+t['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+ttdocument.body.addEventListener(eventName, (e) => {
+ttte.preventDefault();
+ttte.stopPropagation();
+tt}, false);
+t});
+
 		uploadZone.addEventListener('click', () => fileInput.click());
 
 		fileInput.addEventListener('change', (e) => {
