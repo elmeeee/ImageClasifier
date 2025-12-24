@@ -717,7 +717,10 @@ import Layout from '../layouts/Layout.astro';
 		renderImageGrid();
 		updateClassSummary();
 		
-		if (labeledImages.length === uploadedFiles.length) {
+		// Enable proceed if at least 2 classes and 50% of images are labeled
+		const classes = new Set(labeledImages.map(l => l.label));
+		const labeledPercent = (labeledImages.length / uploadedFiles.length) * 100;
+		if (classes.size >= 2 && labeledPercent >= 50) {
 			proceedBtn.disabled = false;
 		}
 	});
