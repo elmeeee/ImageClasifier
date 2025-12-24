@@ -267,22 +267,24 @@ const description = "Train custom image classification models in your browser. D
 					<div class="export-hub">
 						<div class="format-tabs">
 							<button class="format-tab active" data-format="web">
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="10"></circle>
+									<line x1="2" y1="12" x2="22" y2="12"></line>
+									<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
 								</svg>
-								<span>Web / Node.js</span>
+								<span>Web / Cloud</span>
 							</button>
 							<button class="format-tab" data-format="ios">
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M12 20.94c1.88-1.06 3.94-1.06 6 0V6a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v14.94c2.11-1.06 4.12-1.06 6 0z"/>
+								<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+									<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.1 2.48-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-1.04 1.23-2.5.96-3.8-1.31.05-2.92.87-3.86 1.97-.84.99-1.58 2.47-1.32 3.96 1.48.11 2.97-.88 3.53-2.13z"/>
 								</svg>
-								<span>iOS (CoreML)</span>
+								<span>iOS / macOS</span>
 							</button>
 							<button class="format-tab" data-format="android">
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M9 13v7M15 13v7M4 17h16"/>
+								<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+									<path d="M17.523 15.3414C17.065 15.3414 16.6908 14.9672 16.6908 14.5092C16.6908 14.0512 17.065 13.677 17.523 13.677C17.981 13.677 18.3551 14.0512 18.3551 14.5092C18.3551 14.9672 17.981 15.3414 17.523 15.3414ZM6.477 15.3414C6.019 15.3414 5.64485 14.9672 5.64485 14.5092C5.64485 14.0512 6.019 13.677 6.477 13.677C6.935 13.677 7.30915 14.0512 7.30915 14.5092C7.30915 14.9672 6.935 15.3414 6.477 15.3414ZM18.0673 10.1585L19.9866 6.83401C20.129 6.58732 20.0442 6.27306 19.7975 6.13067C19.5508 5.98828 19.2366 6.073 19.0942 6.31969L17.1517 9.68412C15.7029 9.02324 14.084 8.653 12.3852 8.653C10.6864 8.653 9.06752 9.02324 7.61869 9.68412L5.67623 6.31969C5.53384 6.073 5.21957 5.98828 4.97289 6.13067C4.72621 6.27306 4.64137 6.58732 4.78377 6.83401L6.70308 10.1585C3.71969 11.8385 1.63702 14.9314 1.5034 18.5209H23.2671C23.1334 14.9314 21.0508 11.8385 18.0673 10.1585Z"/>
 								</svg>
-								<span>Android (TFLite)</span>
+								<span>Android</span>
 							</button>
 						</div>
 
@@ -1032,26 +1034,209 @@ const description = "Train custom image classification models in your browser. D
 
 		/* Encyclopedia */
 		.encyclopedia-section {
-			margin-top: 20px;
+			margin-top: 24px;
 		}
 
 		.encyclopedia-box {
-			background: var(--surface);
-			border-left: 4px solid var(--primary);
-			padding: 16px;
-			border-radius: 0 12px 12px 0;
+			background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			padding: 24px;
+			border-radius: 16px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.encyclopedia-box::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 4px;
+			height: 100%;
+			background: var(--primary);
 		}
 
 		.encyclopedia-box h4 {
-			font-size: 16px;
-			margin-bottom: 8px;
+			font-size: 18px;
+			margin-bottom: 12px;
 			color: var(--text);
+			font-weight: 700;
 		}
 
 		.encyclopedia-box p {
-			font-size: 13px;
+			font-size: 14px;
 			color: var(--text-secondary);
 			line-height: 1.6;
+			margin-bottom: 20px;
+		}
+
+		.btn-wiki {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 16px;
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: 10px;
+			color: var(--primary);
+			text-decoration: none;
+			font-size: 13px;
+			font-weight: 600;
+			transition: all 0.2s;
+		}
+
+		.btn-wiki:hover {
+			background: var(--primary);
+			color: white;
+			transform: translateX(4px);
+		}
+
+		.btn-wiki svg {
+			width: 16px;
+			height: 16px;
+		}
+
+		/* Export Hub */
+		.export-hub {
+			background: var(--surface-elevated);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			overflow: hidden;
+		}
+
+		.format-tabs {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			background: rgba(0, 0, 0, 0.2);
+			padding: 8px;
+			gap: 8px;
+		}
+
+		.format-tab {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 8px;
+			padding: 16px;
+			background: transparent;
+			border: 1px solid transparent;
+			border-radius: 12px;
+			color: var(--text-muted);
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		.format-tab svg {
+			width: 28px;
+			height: 28px;
+		}
+
+		.format-tab span {
+			font-size: 12px;
+			font-weight: 600;
+		}
+
+		.format-tab:hover {
+			color: var(--text);
+			background: rgba(255, 255, 255, 0.03);
+		}
+
+		.format-tab.active {
+			background: var(--surface);
+			border-color: rgba(255, 255, 255, 0.1);
+			color: var(--primary);
+			box-shadow: var(--shadow);
+		}
+
+		.format-content {
+			padding: 32px;
+		}
+
+		.format-panel {
+			display: none;
+		}
+
+		.format-panel.active {
+			display: block;
+			animation: fadeIn 0.4s ease-out;
+		}
+
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.panel-header {
+			margin-bottom: 24px;
+		}
+
+		.panel-info h4 {
+			font-size: 20px;
+			font-weight: 700;
+			margin-bottom: 8px;
+		}
+
+		.panel-info p {
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		.conversion-steps {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin-bottom: 24px;
+		}
+
+		.c-step {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			background: rgba(255, 255, 255, 0.03);
+			padding: 16px;
+			border-radius: 12px;
+		}
+
+		.c-num {
+			width: 24px;
+			height: 24px;
+			background: var(--primary);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			font-weight: 800;
+		}
+
+		.c-step code {
+			background: #000;
+			padding: 2px 6px;
+			border-radius: 4px;
+			color: var(--success);
+		}
+
+		.code-snippet-box {
+			background: #000;
+			padding: 20px;
+			border-radius: 12px;
+			margin-bottom: 24px;
+			font-family: 'JetBrains Mono', 'Fira Code', monospace;
+			font-size: 13px;
+			border: 1px solid rgba(255, 255, 255, 0.05);
+		}
+
+		.code-label {
+			display: block;
+			color: var(--text-muted);
+			margin-bottom: 12px;
+			font-size: 11px;
+			text-transform: uppercase;
+		}
+
+		.code-snippet-box code {
+			display: block;
+			line-height: 1.8;
 		}
 
 		/* Footer */
