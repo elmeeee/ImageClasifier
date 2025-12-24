@@ -19,18 +19,18 @@ import Layout from '../layouts/Layout.astro';
 						<div class="step-number">1</div>
 						<div>
 							<h2>Upload Training Data</h2>
-							<p>Select a folder with images organized by class</p>
+							<p>Drag & drop folder or select files</p>
 						</div>
 					</div>
 					
 					<div class="upload-zone" id="uploadZone">
 						<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2"/>
+							<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke-width="2"/>
 						</svg>
-						<h3>Click to select folder</h3>
-						<p class="text-muted">Organize images in folders by class name</p>
-						<p class="help-text">Example: MyDataset/duit5000/img1.jpg, MyDataset/duit10000/img2.jpg</p>
-						<input type="file" id="fileInput" webkitdirectory directory multiple hidden/>
+						<h3>Drag & Drop Folder Here</h3>
+						<p class="text-muted">or click to select files</p>
+						<p class="help-text">Organize: MyData/duit5000/img1.jpg, MyData/duit10000/img2.jpg</p>
+						<input type="file" id="fileInput" multiple accept="image/*" hidden/>
 					</div>
 
 					<div class="dataset-summary" id="datasetSummary" style="display: none;">
@@ -40,43 +40,26 @@ import Layout from '../layouts/Layout.astro';
 								<div class="summary-value" id="totalImages">0</div>
 							</div>
 							<div class="summary-item">
-								<div class="summary-label">Classes Detected</div>
+								<div class="summary-label">Classes</div>
 								<div class="summary-value" id="totalClasses">0</div>
 							</div>
 						</div>
 						<div class="class-tags" id="classTags"></div>
-						<button class="btn-primary" id="proceedToTrainBtn" disabled>Proceed to Training</button>
+						<button class="btn-primary" id="startTrainBtn">Start Training</button>
 					</div>
 				</section>
 
-				<!-- Step 2: Train Model -->
+				<!-- Step 2: Training Progress -->
 				<section class="card" id="trainSection" style="display: none;">
 					<div class="card-header">
 						<div class="step-number">2</div>
 						<div>
-							<h2>Train Model</h2>
-							<p>Configure and start training</p>
+							<h2>Training Progress</h2>
+							<p>Model is being trained</p>
 						</div>
 					</div>
 
-					<div class="config-form">
-						<div class="form-row">
-							<div class="form-field">
-								<label>Epochs</label>
-								<input type="number" id="epochs" value="10" min="1" max="100"/>
-							</div>
-							<div class="form-field">
-								<label>Batch Size</label>
-								<input type="number" id="batchSize" value="32" min="8" max="128" step="8"/>
-							</div>
-						</div>
-					</div>
-
-					<button class="btn-primary btn-large" id="startTrainBtn">
-						<span>Start Training</span>
-					</button>
-
-					<div class="progress-section" id="progressSection" style="display: none;">
+					<div class="progress-section">
 						<div class="progress-bar">
 							<div class="progress-fill" id="progressFill"></div>
 						</div>
@@ -246,7 +229,7 @@ import Layout from '../layouts/Layout.astro';
 		transition: all 0.3s;
 	}
 
-	.upload-zone:hover {
+	.upload-zone:hover, .upload-zone.drag-over {
 		border-color: var(--primary);
 		background: rgba(0, 102, 255, 0.05);
 	}
@@ -333,9 +316,9 @@ import Layout from '../layouts/Layout.astro';
 		background: var(--primary);
 		color: white;
 		border: none;
-		padding: 14px 32px;
+		padding: 16px 40px;
 		border-radius: 8px;
-		font-size: 15px;
+		font-size: 16px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -350,45 +333,6 @@ import Layout from '../layouts/Layout.astro';
 	.btn-primary:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	.btn-large {
-		padding: 18px 40px;
-		font-size: 16px;
-	}
-
-	.config-form {
-		margin-bottom: 24px;
-	}
-
-	.form-row {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 16px;
-	}
-
-	.form-field label {
-		display: block;
-		font-size: 13px;
-		color: var(--text-muted);
-		margin-bottom: 8px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.form-field input {
-		width: 100%;
-		background: var(--bg);
-		border: 1px solid var(--border);
-		color: var(--text);
-		padding: 12px 16px;
-		border-radius: 8px;
-		font-size: 15px;
-	}
-
-	.form-field input:focus {
-		outline: none;
-		border-color: var(--primary);
 	}
 
 	.progress-section {
@@ -519,58 +463,115 @@ import Layout from '../layouts/Layout.astro';
 		.test-container {
 			grid-template-columns: 1fr;
 		}
-
-		.form-row {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
 
 <script is:inline>
-	// Use global tf from CDN
-
 	let uploadedDataset = {};
 	let trainedModel = null;
 	let classNames = [];
 
-	// Upload handling with auto-labeling from folder structure
 	const uploadZone = document.getElementById('uploadZone');
 	const fileInput = document.getElementById('fileInput');
 	const datasetSummary = document.getElementById('datasetSummary');
-	const proceedToTrainBtn = document.getElementById('proceedToTrainBtn') as HTMLButtonElement;
+	const startTrainBtn = document.getElementById('startTrainBtn');
 
+	// Click to upload
 	uploadZone.addEventListener('click', () => fileInput.click());
 
+	// File input change
 	fileInput.addEventListener('change', (e) => {
-		const files = Array.from((e.target).files || []);
-		processDataset(files);
+		const files = Array.from(e.target.files || []);
+		processFiles(files);
 	});
 
-	function processDataset(files[]) {
-		uploadedDataset = {};
-		
-		files.forEach(file => {
-			if (file.type.startsWith('image/')) {
-				// Extract class name from folder structure
-				const pathParts = file.webkitRelativePath.split('/');
-				const className = pathParts[pathParts.length - 2]; // Parent folder name
-				
-				if (!uploadedDataset[className]) {
-					uploadedDataset[className] = [];
-				}
-				uploadedDataset[className].push(file);
+	// Drag & drop support
+	uploadZone.addEventListener('dragover', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		uploadZone.classList.add('drag-over');
+	});
+
+	uploadZone.addEventListener('dragleave', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		uploadZone.classList.remove('drag-over');
+	});
+
+	uploadZone.addEventListener('drop', async (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		uploadZone.classList.remove('drag-over');
+
+		const items = e.dataTransfer.items;
+		const files = [];
+
+		// Process dropped items (supports folders)
+		for (let i = 0; i < items.length; i++) {
+			const item = items[i].webkitGetAsEntry();
+			if (item) {
+				await traverseFileTree(item, files);
 			}
+		}
+
+		if (files.length > 0) {
+			processFiles(files);
+		}
+	});
+
+	// Traverse folder structure
+	async function traverseFileTree(item, files, path = '') {
+		return new Promise((resolve) => {
+			if (item.isFile) {
+				item.file((file) => {
+					if (file.type.startsWith('image/')) {
+						file.folderPath = path;
+						files.push(file);
+					}
+					resolve();
+				});
+			} else if (item.isDirectory) {
+				const dirReader = item.createReader();
+				dirReader.readEntries(async (entries) => {
+					for (const entry of entries) {
+						await traverseFileTree(entry, files, path + item.name + '/');
+					}
+					resolve();
+				});
+			}
+		});
+	}
+
+	// Process files and auto-label from folder structure
+	function processFiles(files) {
+		uploadedDataset = {};
+
+		files.forEach(file => {
+			let className = 'unlabeled';
+			
+			// Try to extract class from folder path
+			if (file.folderPath) {
+				const parts = file.folderPath.split('/').filter(p => p);
+				if (parts.length > 0) {
+					className = parts[parts.length - 1];
+				}
+			}
+
+			if (!uploadedDataset[className]) {
+				uploadedDataset[className] = [];
+			}
+			uploadedDataset[className].push(file);
 		});
 
 		const classes = Object.keys(uploadedDataset);
 		const totalImages = Object.values(uploadedDataset).reduce((sum, imgs) => sum + imgs.length, 0);
 
-		if (classes.length >= 2) {
+		if (classes.length >= 1 && totalImages > 0) {
 			classNames = classes;
-			document.getElementById('totalImages')!.textContent = totalImages.toString();
-			document.getElementById('totalClasses')!.textContent = classes.length.toString();
+			document.getElementById('totalImages').textContent = totalImages;
+			document.getElementById('totalClasses').textContent = classes.length;
 			
 			const classTags = document.getElementById('classTags');
 			classTags.innerHTML = classes
@@ -578,26 +579,20 @@ import Layout from '../layouts/Layout.astro';
 				.join('');
 
 			datasetSummary.style.display = 'block';
-			proceedToTrainBtn.disabled = false;
 		}
 	}
 
 	// Training
-	proceedToTrainBtn?.addEventListener('click', () => {
-		document.getElementById('trainSection')!.style.display = 'block';
+	startTrainBtn.addEventListener('click', async () => {
+		document.getElementById('trainSection').style.display = 'block';
 		setTimeout(() => {
-			document.getElementById('trainSection')!.scrollIntoView({ behavior: 'smooth' });
+			document.getElementById('trainSection').scrollIntoView({ behavior: 'smooth' });
 		}, 100);
-	});
 
-	document.getElementById('startTrainBtn')!.addEventListener('click', async () => {
-		const progressSection = document.getElementById('progressSection');
-		progressSection.style.display = 'block';
+		const xs = [];
+		const ys = [];
 
-		// Prepare training data
-		const xs[] = [];
-		const ys[] = [];
-
+		// Load all images
 		for (let i = 0; i < classNames.length; i++) {
 			const className = classNames[i];
 			const images = uploadedDataset[className];
@@ -609,7 +604,7 @@ import Layout from '../layouts/Layout.astro';
 			}
 		}
 
-		// Create simple model
+		// Create model
 		const model = tf.sequential({
 			layers: [
 				tf.layers.flatten({ inputShape: [224, 224, 3] }),
@@ -628,30 +623,27 @@ import Layout from '../layouts/Layout.astro';
 		const xsTensor = tf.stack(xs);
 		const ysTensor = tf.tensor1d(ys, 'int32');
 
-		const epochs = parseInt((document.getElementById('epochs')).value);
-
-		// Train with progress
+		// Train
 		await model.fit(xsTensor, ysTensor, {
-			epochs: epochs,
+			epochs: 10,
 			callbacks: {
 				onEpochEnd: (epoch, logs) => {
-					const progress = ((epoch + 1) / epochs) * 100;
-					document.getElementById('progressFill')!.style.width = progress + '%';
-					document.getElementById('progressPercent')!.textContent = Math.round(progress) + '%';
-					document.getElementById('progressText')!.textContent = `Epoch ${epoch + 1}/${epochs} - Loss: ${logs?.loss.toFixed(4)}`;
+					const progress = ((epoch + 1) / 10) * 100;
+					document.getElementById('progressFill').style.width = progress + '%';
+					document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+					document.getElementById('progressText').textContent = `Epoch ${epoch + 1}/10 - Loss: ${logs.loss.toFixed(4)}`;
 				}
 			}
 		});
 
 		trainedModel = model;
-		document.getElementById('progressText')!.textContent = 'Training complete!';
-		document.getElementById('testSection')!.style.display = 'block';
+		document.getElementById('progressText').textContent = 'Training complete!';
+		document.getElementById('testSection').style.display = 'block';
 		
 		setTimeout(() => {
-			document.getElementById('testSection')!.scrollIntoView({ behavior: 'smooth' });
+			document.getElementById('testSection').scrollIntoView({ behavior: 'smooth' });
 		}, 500);
 
-		// Cleanup
 		xsTensor.dispose();
 		ysTensor.dispose();
 	});
@@ -668,7 +660,7 @@ import Layout from '../layouts/Layout.astro';
 						.div(255.0);
 					resolve(tensor);
 				};
-				img.src = e.target?.result as string;
+				img.src = e.target.result;
 			};
 			reader.readAsDataURL(file);
 		});
@@ -682,14 +674,13 @@ import Layout from '../layouts/Layout.astro';
 	testUpload.addEventListener('click', () => testInput.click());
 
 	testInput.addEventListener('change', async (e) => {
-		const file = (e.target).files?.[0];
+		const file = e.target.files[0];
 		if (file && trainedModel) {
 			const reader = new FileReader();
 			reader.onload = async (e) => {
 				const img = document.getElementById('testImage');
-				img.src = e.target?.result as string;
+				img.src = e.target.result;
 				
-				// Load and preprocess image
 				const testImg = new Image();
 				testImg.onload = async () => {
 					const tensor = tf.browser.fromPixels(testImg)
@@ -698,18 +689,15 @@ import Layout from '../layouts/Layout.astro';
 						.div(255.0)
 						.expandDims(0);
 
-					// Predict
-					const predictions = await trainedModel.predict(tensor) as tf.Tensor;
+					const predictions = await trainedModel.predict(tensor);
 					const probabilities = await predictions.data();
 					const maxIndex = probabilities.indexOf(Math.max(...Array.from(probabilities)));
 					const confidence = probabilities[maxIndex] * 100;
 
-					// Display result
-					document.getElementById('resultClass')!.textContent = classNames[maxIndex];
-					document.getElementById('confidenceFill')!.style.width = confidence + '%';
-					document.getElementById('confidenceText')!.textContent = `${confidence.toFixed(1)}% confidence`;
+					document.getElementById('resultClass').textContent = classNames[maxIndex];
+					document.getElementById('confidenceFill').style.width = confidence + '%';
+					document.getElementById('confidenceText').textContent = `${confidence.toFixed(1)}% confidence`;
 
-					// Show all predictions
 					const allPreds = document.getElementById('allPredictions');
 					allPreds.innerHTML = '<h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">All Predictions:</h4>' +
 						classNames
@@ -723,11 +711,10 @@ import Layout from '../layouts/Layout.astro';
 
 					testResult.style.display = 'block';
 
-					// Cleanup
 					tensor.dispose();
 					predictions.dispose();
 				};
-				testImg.src = e.target?.result as string;
+				testImg.src = e.target.result;
 			};
 			reader.readAsDataURL(file);
 		}
