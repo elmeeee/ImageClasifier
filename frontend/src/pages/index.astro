@@ -260,30 +260,89 @@ const description = "Train custom image classification models in your browser. D
 						</div>
 						<div class="card-title-group">
 							<h3 class="card-title" data-t="step-4-title">Export & Use Model</h3>
-							<p class="card-subtitle" data-t="step-4-subtitle">Download your model to use in other applications</p>
+							<p class="card-subtitle" data-t="step-4-subtitle">Pilih format sesuai aplikasi yang ingin Anda bangun</p>
 						</div>
 					</div>
-					<div class="export-grid">
-						<div class="export-card">
-							<div class="export-info">
-								<h4 data-t="exp-tfjs">Format TensorFlow.js</h4>
-								<p data-t="exp-tfjs-desc">Download model untuk web atau aplikasi Node.js.</p>
-							</div>
-							<button class="btn-primary" id="exportTfjsBtn">
+					
+					<div class="export-hub">
+						<div class="format-tabs">
+							<button class="format-tab active" data-format="web">
 								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+									<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
 								</svg>
-								<span>Download .json + .bin</span>
+								<span>Web / Node.js</span>
+							</button>
+							<button class="format-tab" data-format="ios">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M12 20.94c1.88-1.06 3.94-1.06 6 0V6a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v14.94c2.11-1.06 4.12-1.06 6 0z"/>
+								</svg>
+								<span>iOS (CoreML)</span>
+							</button>
+							<button class="format-tab" data-format="android">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M9 13v7M15 13v7M4 17h16"/>
+								</svg>
+								<span>Android (TFLite)</span>
 							</button>
 						</div>
-						<div class="export-card conversion">
-							<div class="export-info">
-								<h4 data-t="exp-convert">Konversi ke .mlmodel / .tflite</h4>
-								<p data-t="exp-convert-desc">Gunakan script Python untuk konversi ke iOS/Android.</p>
+
+						<div class="format-content" id="formatContent">
+							<div class="format-panel active" id="panel-web">
+								<div class="panel-header">
+									<div class="panel-info">
+										<h4 data-t="exp-tfjs">Format TensorFlow.js</h4>
+										<p data-t="exp-tfjs-desc">Download model untuk web atau aplikasi Node.js.</p>
+									</div>
+								</div>
+								<div class="export-actions">
+									<button class="btn-primary" id="btnExportWeb">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+										</svg>
+										<span>Export for Web</span>
+									</button>
+								</div>
 							</div>
-							<div class="code-snippet-box">
-								<code>pip install tensorflowjs coremltools</code>
-								<code>tensorflowjs_converter --input_format=tfjs_layers_model model.json ./output</code>
+
+							<div class="format-panel" id="panel-ios">
+								<div class="panel-header">
+									<div class="panel-info">
+										<h4 data-t="exp-convert">Konversi ke .mlmodel</h4>
+										<p data-t="exp-convert-desc">Gunakan model ini di iPhone, iPad, atau Mac.</p>
+									</div>
+								</div>
+								<div class="conversion-steps">
+									<div class="c-step">
+										<span class="c-num">1</span>
+										<p>Download Model & Script Konversi</p>
+									</div>
+									<div class="c-step">
+										<span class="c-num">2</span>
+										<p>Jalankan <code>python convert.py</code> di Mac Anda</p>
+									</div>
+								</div>
+								<button class="btn-primary" id="btnExportIos">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M12 5v14M5 12h14"/>
+									</svg>
+									<span>Download iOS Deployment Kit</span>
+								</button>
+							</div>
+
+							<div class="format-panel" id="panel-android">
+								<div class="panel-header">
+									<div class="panel-info">
+										<h4>TFLite Model</h4>
+										<p>Format ringan untuk aplikasi Android atau perangkat IoT.</p>
+									</div>
+								</div>
+								<div class="code-snippet-box" style="background: #000; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+									<code style="color: #00ff88; display: block; margin-bottom: 4px;">pip install tensorflowjs coremltools</code>
+									<code style="color: #00d4ff; font-size: 0.8em;">tensorflowjs_converter --input_format=tfjs_layers_model model.json ./tflite_model</code>
+								</div>
+								<button class="btn-primary" id="btnExportAndroid">
+									<span>Download Android Package</span>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -1566,11 +1625,34 @@ const description = "Train custom image classification models in your browser. D
 			}
 		});
 
-		// EXPORT LOGIC
-		const exportTfjsBtn = document.getElementById('exportTfjsBtn');
-		exportTfjsBtn.addEventListener('click', async () => {
+		// EXPORT HUB LOGIC
+		document.querySelectorAll('.format-tab').forEach(tab => {
+			tab.addEventListener('click', () => {
+				document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+				document.querySelectorAll('.format-panel').forEach(p => p.classList.remove('active'));
+				
+				tab.classList.add('active');
+				const format = tab.dataset.format;
+				document.getElementById(`panel-${format}`).classList.add('active');
+			});
+		});
+
+		document.getElementById('btnExportWeb').addEventListener('click', async () => {
+			if (trainedModel) await trainedModel.save('downloads://vision-ai-web-model');
+		});
+
+		document.getElementById('btnExportIos').addEventListener('click', async () => {
 			if (trainedModel) {
-				await trainedModel.save('downloads://vision-ai-model');
+				// We download the model and explain that conversion happens via the provided kit
+				await trainedModel.save('downloads://ios-kit-base-model');
+				alert("Model base berhasil diunduh! Silakan jalankan script konversi CoreML yang tersedia di panel untuk mendapatkan file .mlmodel Anda.");
+			}
+		});
+
+		document.getElementById('btnExportAndroid').addEventListener('click', async () => {
+			if (trainedModel) {
+				await trainedModel.save('downloads://android-kit-base-model');
+				alert("Model base berhasil diunduh! Gunakan perintah konversi TFLite di panel untuk mendapatkan file .tflite Anda.");
 			}
 		});
 	</script>
