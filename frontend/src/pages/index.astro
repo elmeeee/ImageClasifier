@@ -1671,7 +1671,7 @@ const description = "Train custom image classification models in your browser. D
 		let lastMaxIndex = null;
 		let lastConfidence = null;
 
-		const updateResultUI = (lang) => {
+		const updateResultUI = async (lang) => {
 			if (lastMaxIndex === null) return;
 			const predictedClass = classNames[lastMaxIndex];
 			const insightText = document.getElementById('insightText');
@@ -1713,15 +1713,18 @@ const description = "Train custom image classification models in your browser. D
 
 			const exp = explanations[lang];
 			insightText.innerHTML = (lastConfidence > 90 ? exp.vhigh : (lastConfidence > 70 ? exp.high : exp.low)) + exp.warning;
+			encySection.style.display = 'block';
 
-			// UNIVERSAL ENCYCLOPEDIA LOGIC: SMARTER MATCHING
-			let bonusMatch = null;
-			const cleanLabel = predictedClass.toLowerCase();
-			const numbersInLabel = predictedClass.match(/\d+/g)?.join('') || "";
+			// DYNAMIC AI SEARCH LOGIC
+			encyName.textContent = lang === 'id' ? 'Mencari wawasan AI...' : 'Searching for AI insights...';
+			encyDesc.textContent = '...';
 			
-			// Mapping common shorthand to nominals
+			let finalContent = null;
+			const cleanLabel = predictedClass.toLowerCase();
+
+			// 1. First check Curated Fallback (Rupiah specialists)
 			const nominalMap = {
-				"1000": ["1000", "1.000", "1rb", "1k", "seribu", "100b", "100"], // 100b because users sometimes skip a zero or use B for bill
+				"1000": ["1000", "1.000", "1rb", "1k", "seribu", "100b", "100"],
 				"2000": ["2000", "2.000", "2rb", "2k", "duaribu"],
 				"5000": ["5000", "5.000", "5rb", "5k", "limaribu"],
 				"10000": ["10000", "10.000", "10rb", "10k", "sepuluhribu"],
@@ -1730,44 +1733,45 @@ const description = "Train custom image classification models in your browser. D
 				"100000": ["100000", "100.000", "100rb", "100k", "seratusribu"]
 			};
 
-			// Try to find the best match in KNOWLEDGE_BASE
-			for (let key in KNOWLEDGE_BASE) {
-				const synonyms = nominalMap[key] || [];
-				const isSynonym = synonyms.some(s => cleanLabel.includes(s));
-				
-				if (cleanLabel.includes(key.toLowerCase()) || (numbersInLabel && numbersInLabel.includes(key)) || isSynonym) {
-					bonusMatch = KNOWLEDGE_BASE[key][lang];
-					break;
-				}
+			let curatedKey = null;
+			for(let k in nominalMap) {
+				if (nominalMap[k].some(s => cleanLabel.includes(s))) { curatedKey = k; break; }
 			}
 
-			if (bonusMatch) {
-				encyName.textContent = bonusMatch.name;
-				encyDesc.textContent = bonusMatch.desc;
+			// 2. Fetch Live from Wikipedia API (Real search, not hardcoded!)
+			try {
+				const wikiLang = lang === 'id' ? 'id' : (lang === 'jp' ? 'ja' : 'en');
+				const response = await fetch(`https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(predictedClass)}`);
+				if (response.ok) {
+					const data = await response.json();
+					finalContent = { name: data.title, desc: data.extract };
+				}
+			} catch (err) {
+				console.log("Wiki Search Error:", err);
+			}
+
+			// 3. Final Render Logic
+			if (finalContent) {
+				encyName.textContent = finalContent.name;
+				encyDesc.textContent = finalContent.desc;
+			} else if (curatedKey && KNOWLEDGE_BASE[curatedKey]) {
+				const curated = KNOWLEDGE_BASE[curatedKey][lang];
+				encyName.textContent = curated.name;
+				encyDesc.textContent = curated.desc;
 			} else {
-				const universalDesc = {
-					id: {
-						title: `Objek Terdeteksi: ${predictedClass}`,
-						desc: `VisionAI mengenali objek ini sebagai "${predictedClass}". Model mempelajari karakteristik visual unik (warna, bentuk, dan tekstur) dari dataset yang Anda berikan untuk klasifikasi ini.`
-					},
-					en: {
-						title: `Detected Object: ${predictedClass}`,
-						desc: `VisionAI identifies this as "${predictedClass}". The model learned its unique visual features (color, shape, texture) from the training data you provided for this category.`
-					},
-					jp: {
-						title: `検出されたオブジェクト: ${predictedClass}`,
-						desc: `VisionAIはこれを「${predictedClass}」として識別します。モデルは、このカテゴリに提供されたトレーニングデータから独自の見栄え（色、形状、テクスチャ）を学習しました。`
-					}
-				};
-				const ud = universalDesc[lang];
+				const ud = {
+					id: { title: `Objek: ${predictedClass}`, desc: `VisionAI mengenali pola ini sebagai "${predictedClass}". Model ini dilatih secara kustom menggunakan data Anda.` },
+					en: { title: `Object: ${predictedClass}`, desc: `VisionAI recognizes this pattern as "${predictedClass}". This model was custom trained using your specific dataset.` },
+					jp: { title: `オブジェクト: ${predictedClass}`, desc: `VisionAIはこのパターンを「${predictedClass}」として認識します。このモデルは提供されたデータでトレーニングされました。` }
+				}[lang];
 				encyName.textContent = ud.title;
 				encyDesc.textContent = ud.desc;
 			}
 
 			// Add Wiki Lookup Link (with fixed styling)
-			const wikiLang = lang === 'id' ? 'id' : (lang === 'jp' ? 'ja' : 'en');
+			const wikiLangLink = lang === 'id' ? 'id' : (lang === 'jp' ? 'ja' : 'en');
 			const wikiBtnLabel = { id: 'Pelajari di Wikipedia', en: 'Learn on Wikipedia', jp: 'ウィキペディアで学ぶ' };
-			const wikiUrl = `https://${wikiLang}.wikipedia.org/wiki/${encodeURIComponent(predictedClass)}`;
+			const wikiUrl = `https://${wikiLangLink}.wikipedia.org/wiki/${encodeURIComponent(predictedClass)}`;
 			
 			const existingWiki = document.getElementById('wikiLinkBtn');
 			if (existingWiki) existingWiki.remove();
@@ -1789,8 +1793,6 @@ const description = "Train custom image classification models in your browser. D
 				<span>${wikiBtnLabel[lang]}</span>
 			`;
 			encyDesc.parentElement.appendChild(wikiBtn);
-
-			encySection.style.display = 'block';
 		};
 
 		const updateGlobalUI = (lang) => {
