@@ -2063,8 +2063,12 @@ const description = "Train custom image classification models in your browser. D
 					const testImg = new Image();
 					testImg.onload = async () => {
 						const testImgTensor = tf.browser.fromPixels(testImg).resizeBilinear([224, 224]).toFloat().div(255.0);
-						const feature = featureExtractor.predict(testImgTensor.expandDims(0));
-						const predictions = await trainedModel.predict(feature);
+						// Extract features using the correct MobileNet method (infer)
+						const feature = tf.tidy(() => {
+							return featureExtractor.infer(testImgTensor, true);
+						});
+						
+						const predictions = trainedModel.predict(feature);
 						lastProbabilities = await predictions.data();
 						lastMaxIndex = lastProbabilities.indexOf(Math.max(...Array.from(lastProbabilities)));
 						lastConfidence = lastProbabilities[lastMaxIndex] * 100;
@@ -2158,43 +2162,64 @@ const description = "Train custom image classification models in your browser. D
 <head>
     <title>VisionAI Web Runner - Model by Elmee</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"><\/script>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px; background: #0a0a0a; color: white; }
-        .card { background: #1a1a1a; padding: 40px; border-radius: 20px; display: inline-block; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        button { background: #0066ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .card { background: #1a1a1a; padding: 40px; border-radius: 20px; display: inline-block; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 500px; }
+        button { background: #0066ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
         .credit { margin-top: 30px; font-size: 0.8em; color: #666; }
         .credit span { color: #00ff88; font-weight: bold; }
+        #status { font-size: 0.9em; color: #888; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1 style="margin-top:0">VisionAI Runner</h1>
-        <p style="color:#aaa">Model trained by <strong>Elmee</strong></p>
+        <p style="color:#aaa; margin-bottom: 8px;">Model trained by <strong>Elmee</strong></p>
+        <div id="status">Initializing AI Core...</div>
         <div style="margin: 30px 0;">
             <input type="file" id="fileInput" accept="image/*" style="display:none">
-            <button onclick="document.getElementById('fileInput').click()">Upload Image to Test</button>
+            <button id="uploadBtn" onclick="document.getElementById('fileInput').click()" disabled>Loading AI Brain...</button>
         </div>
         <div id="result" style="font-weight:bold; font-size:1.5em; color:#00ff88; min-height:1.5em;"></div>
         <div class="credit">Powered by VisionAI &bull; Created by <span>Elmee</span></div>
     </div>
     <script>
-        let model;
+        let powerHead;
+        let aiBrain;
         const classNames = ${JSON.stringify(classNames)};
         
         async function init() {
-            model = await tf.loadLayersModel('model.json');
-            console.log("Model loaded!");
+            try {
+                aiBrain = await mobilenet.load({ version: 2, alpha: 1.0 });
+                powerHead = await tf.loadLayersModel('model.json');
+                document.getElementById('status').innerText = "VisionAI is Ready!";
+                document.getElementById('uploadBtn').innerText = "Upload Image to Test";
+                document.getElementById('uploadBtn').disabled = false;
+            } catch (err) {
+                document.getElementById('status').innerText = "Error: " + err.message;
+            }
         }
 
         document.getElementById('fileInput').onchange = async (e) => {
             const file = e.target.files[0];
             const img = new Image();
             img.onload = async () => {
-                const tensor = tf.browser.fromPixels(img).resizeBilinear([224, 224]).toFloat().div(255).expandDims(0);
-                const pred = await model.predict(tensor);
-                const data = await pred.data();
-                const idx = data.indexOf(Math.max(...Array.from(data)));
-                document.getElementById('result').innerText = classNames[idx];
+                document.getElementById('result').innerText = "Analyzing...";
+                const tensor = tf.browser.fromPixels(img)
+                    .resizeBilinear([224, 224])
+                    .toFloat()
+                    .div(255);
+                
+                tf.tidy(() => {
+                    const feature = aiBrain.infer(tensor, true);
+                    const pred = powerHead.predict(feature);
+                    const data = pred.dataSync();
+                    const idx = data.indexOf(Math.max(...Array.from(data)));
+                    document.getElementById('result').innerText = classNames[idx];
+                });
+                
+                tensor.dispose();
             };
             img.src = URL.createObjectURL(file);
         };
