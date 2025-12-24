@@ -1365,21 +1365,36 @@ const description = "Train custom image classification models in your browser. D
 					`).join('');
 			}
 
-			const t = UI_TRANSLATIONS[lang];
-			const labels = {
-				id: { vhigh: "AI Sangat Yakin! Ini mirip", high: "AI menebak ini", low: "AI ragu, tapi mungkin ini" },
-				en: { vhigh: "AI is Very Confident! This looks like", high: "AI predicts this is", low: "AI is unsure, but it might be" },
-				jp: { vhigh: "AIは非常に自信があります！これはまさに", high: "AIはこれが", low: "AIは確信が持てませんが、" }
+			// AI INSIGHT: TRANSPARENT LOGIC
+			const explanations = {
+				id: {
+					vhigh: `AI Sangat Yakin! Dari dataset yang lo kasih, benda ini punya kemiripan pola visual hingga 90%+ dengan label <span class="insight-highlight">"${predictedClass}"</span>.`,
+					high: `AI menebak ini <span class="insight-highlight">"${predictedClass}"</span>. Gua ngeliat ada kemiripan tekstur dan warna yang mirip sama foto-foto yang lo upload tadi.`,
+					low: `AI agak ragu, tapi kalau disuruh milih dari data lo, ini paling mendekati <span class="insight-highlight">"${predictedClass}"</span>.`,
+					warning: `<br/><small style="opacity:0.7; font-style: italic;">*Catatan: Gua cuma bisa milih dari apa yang lo latih. Kalau lo kasih benda asing, gua bakal tetep milih label yang paling "mirip" pola visualnya.*</small>`
+				},
+				en: {
+					vhigh: `AI is Very Confident! Based on your training data, this object has 90%+ visual similarity with <span class="insight-highlight">"${predictedClass}"</span>.`,
+					high: `AI predicts this is <span class="insight-highlight">"${predictedClass}"</span>. I see texture and color patterns that match the images you uploaded.`,
+					low: `AI is unsure, but out of your dataset, this is the closest match to <span class="insight-highlight">"${predictedClass}"</span>.`,
+					warning: `<br/><small style="opacity:0.7; font-style: italic;">*Note: I only know what you taught me. If you provide something new, I will still pick the class that looks most "similar" visually.*</small>`
+				},
+				jp: {
+					vhigh: `AIは非常に自信があります！提供されたデータセットに基づくと、このオブジェクトは<span class="insight-highlight">"${predictedClass}"</span>と90%以上の視覚的類似性があります。`,
+					high: `AIはこれが <span class="insight-highlight">"${predictedClass}"</span> だと予測しています。アップロードされた画像とテクスチャや色が一致しています。`,
+					low: `AIは確信が持てませんが、提供されたデータの中では、これが <span class="insight-highlight">"${predictedClass}"</span> に最も近いです。`,
+					warning: `<br/><small style="opacity:0.7; font-style: italic;">*注：私はあなたが教えたことしか知りません。新しいものが提供されても、視覚的に最も「似ている」クラスを選択します。*</small>`
+				}
 			};
-			const lb = labels[lang];
-			const status = lastConfidence > 90 ? lb.vhigh : (lastConfidence > 70 ? lb.high : lb.low);
-			insightText.innerHTML = `${status} <span class="insight-highlight">${predictedClass}</span>.`;
 
-			// UNIVERSAL DYNAMIC EXPLANATION
+			const exp = explanations[lang];
+			let baseMsg = lastConfidence > 90 ? exp.vhigh : (lastConfidence > 70 ? exp.high : exp.low);
+			insightText.innerHTML = baseMsg + exp.warning;
+
+			// ENCYCLOPEDIA: DATA BASED
 			let title = '';
 			let description = '';
 			
-			// 1. Check if it's in our Bonus Knowledge Base first
 			let bonusMatch = null;
 			const cleanName = predictedClass.toLowerCase().replace(/[^0-9a-z]/g, '');
 			for (let key in KNOWLEDGE_BASE) {
@@ -1393,24 +1408,22 @@ const description = "Train custom image classification models in your browser. D
 				title = bonusMatch.name;
 				description = bonusMatch.desc;
 			} else {
-				// 2. Dynamic Universal Explanation for ANY object
 				const genericExpl = {
 					id: {
-						title: `Objek: ${predictedClass}`,
-						desc: `VisionAI mengenali objek ini sebagai "${predictedClass}" berdasarkan analisis pola visual, warna, dan fitur unik yang Anda latih sebelumnya. Model mendeteksi tingkat kemiripan fitur yang tinggi dari dataset yang Anda berikan.`
+						title: `Analisis Data: ${predictedClass}`,
+						desc: `Benda ini dideteksi sebagai "${predictedClass}" karena model menemukan fitur unik (garis, kontras, atau komposisi) yang identik dengan sampel yang lo kasih di folder tersebut. Semakin banyak foto yang lo upload, semakin akurat gua ngebedain benda ini dari yang lain.`
 					},
 					en: {
-						title: `Object: ${predictedClass}`,
-						desc: `VisionAI identifies this as "${predictedClass}" by analyzing visual patterns, colors, and unique features from your training session. The model found high feature similarity based on your provided dataset.`
+						title: `Data Analysis: ${predictedClass}`,
+						desc: `This object is detected as "${predictedClass}" because the model found unique features (lines, contrast, or composition) identical to the samples you provided in that folder. More training images help me distinguish this more accurately.`
 					},
 					jp: {
-						title: `オブジェクト: ${predictedClass}`,
-						desc: `VisionAIは、以前のトレーニングでの視覚パターン、色、および独自の特徴の分析に基づいて、これを「${predictedClass}」として識別します。モデルは、提供されたデータセットに基づいた高い特徴の類似性を検出しました。`
+						title: `データ分析: ${predictedClass}`,
+						desc: `このオブジェクトは、そのフォルダに提供されたサンプルと同一の独自の機能（ライン、コントラスト、または構成）をモデルが見つけたため、「${predictedClass}」として検出されました。トレーニング画像が多いほど、正確に区別できます。`
 					}
 				};
-				const g = genericExpl[lang];
-				title = g.title;
-				description = g.desc;
+				title = genericExpl[lang].title;
+				description = genericExpl[lang].desc;
 			}
 
 			encyName.textContent = title;
