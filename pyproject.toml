@@ -6,8 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "cifar10-dashboard"
 version = "1.0.0"
 requires-python = ">=3.10,<3.11"
+dependencies = [
+    "flask==3.0.0",
+    "flask-cors==4.0.0",
+    "werkzeug==3.0.1"
+]
 
 [tool.setuptools]
 py-modules = []
-
-# Note: Dependencies are managed in requirements.txt for Vercel deployment
