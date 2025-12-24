@@ -1391,14 +1391,16 @@ const description = "Train custom image classification models in your browser. D
 			let baseMsg = lastConfidence > 90 ? exp.vhigh : (lastConfidence > 70 ? exp.high : exp.low);
 			insightText.innerHTML = baseMsg + exp.warning;
 
-			// ENCYCLOPEDIA: DATA BASED
+			// ENCYCLOPEDIA: DATA BASED + HISTORY
 			let title = '';
 			let description = '';
 			
 			let bonusMatch = null;
-			const cleanName = predictedClass.toLowerCase().replace(/[^0-9a-z]/g, '');
+			// Smarter Matching: Check if label contains nominal numbers (1000, 2000, etc)
+			const labelDigits = predictedClass.match(/\d+/g)?.join('') || '';
+			
 			for (let key in KNOWLEDGE_BASE) {
-				if (cleanName.includes(key)) {
+				if (predictedClass.includes(key) || (labelDigits && labelDigits.includes(key))) {
 					bonusMatch = KNOWLEDGE_BASE[key][lang];
 					break;
 				}
