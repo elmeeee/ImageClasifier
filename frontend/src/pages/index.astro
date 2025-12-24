@@ -1027,10 +1027,10 @@ const description = "Train custom image classification models in your browser. D
 					.join('');
 
 				datasetSummary.style.display = 'block';
-			}
 			} else if (classes.length === 1) {
-			alert("⚠️ Need at least 2 classes!\n\nYou only uploaded: " + classes[0] + "\n\nPlease organize images in folders:\nMyData/class1/\nMyData/class2/");
+				alert("⚠️ Need at least 2 classes!\n\nYou only uploaded: " + classes[0] + "\n\nPlease organize images in folders:\nMyData/class1/\nMyData/class2/");
 			}
+		}
 
 		startTrainBtn.addEventListener('click', async () => {
 			document.getElementById('trainSection').style.display = 'block';
