@@ -1436,8 +1436,8 @@ const description = "Train custom image classification models in your browser. D
 		}
 	</style>
 
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 	<script is:inline>
@@ -1561,91 +1561,108 @@ const description = "Train custom image classification models in your browser. D
 		}
 
 		startTrainBtn.addEventListener('click', async () => {
+			if (classNames.length < 2) return;
+			
+			startTrainBtn.disabled = true;
 			document.getElementById('trainSection').style.display = 'block';
 			setTimeout(() => {
 				document.getElementById('trainSection').scrollIntoView({ behavior: 'smooth' });
 			}, 100);
 
-			// 1. Load Feature Extractor (AI-powered Training)
-			document.getElementById('progressText').textContent = 'Loading AI Base Model...';
-			if (!featureExtractor) {
-				const baseModel = await mobilenet.load();
-				// Get the internal model to use for feature extraction
-				// We use the output of the global average pooling layer
-				featureExtractor = {
-					model: baseModel,
-					predict: (img) => baseModel.infer(img, true)
-				};
-			}
-
-			// 2. Prepare Features
-			document.getElementById('progressText').textContent = 'Extracting AI features from images...';
-			const features = [];
-			const ys = [];
-
-			for (let i = 0; i < classNames.length; i++) {
-				const className = classNames[i];
-				const images = uploadedDataset[className];
-
-				for (const file of images) {
-					const imgTensor = await loadImage(file);
-					const feature = featureExtractor.predict(imgTensor);
-					features.push(feature);
-					ys.push(i);
-					imgTensor.dispose();
+			try {
+				// 1. Load Feature Extractor (AI Base)
+				document.getElementById('progressText').textContent = 'Initializing AI Brain...';
+				if (!featureExtractor) {
+					// Add a small delay for TF to be ready
+					featureExtractor = await mobilenet.load({ version: 2, alpha: 1.0 });
 				}
-			}
 
-			// 3. Define the Head Model (Transfer Learning)
-			const xsTensor = tf.concat(features);
-			const ysTensor = tf.oneHot(tf.tensor1d(ys, 'int32'), classNames.length);
+				// 2. Prepare Data with Augmentation & AI Feature Extraction
+				document.getElementById('progressText').textContent = 'Extracting features with AI...';
+				const featArrs = [];
+				const labArrs = [];
 
-			const model = tf.sequential({
-				layers: [
-					tf.layers.dense({ units: 128, activation: 'relu', inputShape: [xsTensor.shape[1]] }),
-					tf.layers.dropout({ rate: 0.2 }),
-					tf.layers.dense({ units: classNames.length, activation: 'softmax' })
-				]
-			});
+				for (let i = 0; i < classNames.length; i++) {
+					const className = classNames[i];
+					const images = uploadedDataset[className];
 
-			model.compile({
-				optimizer: 'adam',
-				loss: 'categoricalCrossentropy',
-				metrics: ['accuracy']
-			});
-
-			const xsTensor = tf.stack(xs);
-			const ysTensor = tf.oneHot(tf.tensor1d(ys, 'int32'), classNames.length);
-
-			const circumference = 2 * Math.PI * 54;
-			const progressCircle = document.getElementById('progressCircle');
-
-			await model.fit(xsTensor, ysTensor, {
-				epochs: 10,
-				callbacks: {
-					onEpochEnd: (epoch, logs) => {
-						const progress = ((epoch + 1) / 10) * 100;
-						const offset = circumference - (progress / 100) * circumference;
+					for (const file of images) {
+						const imgTensor = await loadImage(file);
 						
-						progressCircle.style.strokeDashoffset = offset;
-						document.getElementById('progressFill').style.width = progress + '%';
-						document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
-						document.getElementById('progressText').textContent = `Epoch ${epoch + 1}/10 - Loss: ${logs.loss.toFixed(4)} - Accuracy: ${(logs.acc * 100).toFixed(1)}%`;
+						// Use tf.tidy to prevent memory leaks during extraction
+						tf.tidy(() => {
+							// Normal image
+							featArrs.push(featureExtractor.infer(imgTensor, true));
+							labArrs.push(i);
+
+							// Data Augmentation: Horizontal Flip
+							const flipped = tf.image.flipLeftRight(imgTensor);
+							featArrs.push(featureExtractor.infer(flipped, true));
+							labArrs.push(i);
+						});
+						
+						imgTensor.dispose();
 					}
 				}
-			});
 
-			trainedModel = model;
-			document.getElementById('progressText').textContent = 'Training complete! Ready to test.';
-			document.getElementById('testSection').style.display = 'block';
-			document.getElementById('exportSection').style.display = 'block';
-			
-			setTimeout(() => {
-				document.getElementById('testSection').scrollIntoView({ behavior: 'smooth' });
-			}, 500);
+				// 3. Combine it into training tensors
+				const trainX = tf.concat(featArrs);
+				const trainY = tf.oneHot(tf.tensor1d(labArrs, 'int32'), classNames.length);
 
-			xsTensor.dispose();
-			ysTensor.dispose();
+				// 4. Create the "Power Head" Model (Keras style)
+				const model = tf.sequential();
+				model.add(tf.layers.dense({ units: 256, activation: 'relu', inputShape: [trainX.shape[1]] }));
+				model.add(tf.layers.batchNormalization());
+				model.add(tf.layers.dropout({ rate: 0.4 }));
+				model.add(tf.layers.dense({ units: 128, activation: 'relu' }));
+				model.add(tf.layers.batchNormalization());
+				model.add(tf.layers.dense({ units: classNames.length, activation: 'softmax' }));
+
+				model.compile({
+					optimizer: tf.train.adam(0.0001),
+					loss: 'categoricalCrossentropy',
+					metrics: ['accuracy']
+				});
+
+				const circumference = 2 * Math.PI * 54;
+				const progCircle = document.getElementById('progressCircle');
+				const epochsCount = 20;
+
+				await model.fit(trainX, trainY, {
+					epochs: epochsCount,
+					shuffle: true,
+					validationSplit: 0.15,
+					callbacks: {
+						onEpochEnd: (epoch, logs) => {
+							const p = ((epoch + 1) / epochsCount) * 100;
+							const offset = circumference - (p / 100) * circumference;
+							
+							progCircle.style.strokeDashoffset = offset;
+							document.getElementById('progressFill').style.width = p + '%';
+							document.getElementById('progressPercent').textContent = Math.round(p) + '%';
+							document.getElementById('progressText').textContent = `AI Learning: Epoch ${epoch + 1}/${epochsCount} - Accuracy: ${(logs.acc * 100).toFixed(1)}%`;
+						}
+					}
+				});
+
+				trainedModel = model;
+				document.getElementById('progressText').textContent = 'AI Training Successful!';
+				document.getElementById('testSection').style.display = 'block';
+				document.getElementById('exportSection').style.display = 'block';
+				
+				setTimeout(() => {
+					document.getElementById('testSection').scrollIntoView({ behavior: 'smooth' });
+				}, 500);
+
+				trainX.dispose();
+				trainY.dispose();
+			} catch (err) {
+				console.error("Training Error:", err);
+				alert("Error during training: " + err.message);
+				document.getElementById('progressText').textContent = 'Training Failed!';
+			} finally {
+				startTrainBtn.disabled = false;
+			}
 		});
 
 		async function loadImage(file) {
