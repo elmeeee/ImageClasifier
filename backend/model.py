@@ -1,78 +1,89 @@
 """
-Model architecture for CIFAR-10 image classification
+Model architecture for image classification using Transfer Learning
 """
-from tensorflow.keras.models import Sequential
+import tensorflow as tf
+from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import (
     Dense, Dropout, Activation, Flatten,
-    Conv2D, MaxPooling2D, BatchNormalization
+    GlobalAveragePooling2D, BatchNormalization, Input
 )
+from tensorflow.keras.applications import MobileNetV2, EfficientNetB0
 
 
-class CIFAR10Model:
-    """Enhanced CIFAR-10 CNN Model with BatchNormalization"""
+class VisionAIModel:
+    """
+    Powerful Image Classification Model using Transfer Learning.
+    Supports MobileNetV2 and EfficientNetB0 as base models.
+    """
     
-    def __init__(self, num_classes=10):
+    def __init__(self, num_classes=10, base_model_type="mobilenet_v2"):
+        """
+        Initialize the model
+        
+        Args:
+            num_classes: Number of output classes
+            base_model_type: "mobilenet_v2" or "efficientnet_b0"
+        """
         self.num_classes = num_classes
+        self.base_model_type = base_model_type
         self.model = None
+        self.base_model = None
         
-    def build(self, input_shape=(32, 32, 3)):
+    def build(self, input_shape=(224, 224, 3)):
         """
-        Constructs an improved CNN model with BatchNormalization:
-        - Block 1: 2x Conv(32) + BatchNorm + MaxPool + Dropout
-        - Block 2: 2x Conv(64) + BatchNorm + MaxPool + Dropout
-        - Block 3: 2x Conv(128) + BatchNorm + MaxPool + Dropout
-        - Dense: Flatten + FC(1024) + Dropout + FC(num_classes)
+        Build the model using Transfer Learning:
+        1. Pre-trained base model (frozen)
+        2. Global Average Pooling
+        3. Dense hidden layers with BatchNorm & Dropout
+        4. Softmax output layer
         """
-        model = Sequential([
-            # Block 1
-            Conv2D(32, (3, 3), padding="same", input_shape=input_shape),
-            BatchNormalization(),
-            Activation("relu"),
-            Conv2D(32, (3, 3), padding="same"),
-            BatchNormalization(),
-            Activation("relu"),
-            MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
-            
-            # Block 2
-            Conv2D(64, (3, 3), padding="same"),
-            BatchNormalization(),
-            Activation("relu"),
-            Conv2D(64, (3, 3), padding="same"),
-            BatchNormalization(),
-            Activation("relu"),
-            MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
-            
-            # Block 3
-            Conv2D(128, (3, 3), padding="same"),
-            BatchNormalization(),
-            Activation("relu"),
-            Conv2D(128, (3, 3), padding="same"),
-            BatchNormalization(),
-            Activation("relu"),
-            MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.25),
-            
-            # Dense layers
-            Flatten(),
-            Dense(1024),
-            BatchNormalization(),
-            Activation("relu"),
-            Dropout(0.5),
-            Dense(self.num_classes, activation="softmax")
-        ])
+        inputs = Input(shape=input_shape)
         
-        self.model = model
-        return model
-    
-    def compile(self, optimizer="adam", learning_rate=0.001):
-        """Compile the model with specified optimizer"""
-        if optimizer == "adam":
-            from tensorflow.keras.optimizers import Adam
-            opt = Adam(learning_rate=learning_rate)
+        # Load pre-trained base model
+        if self.base_model_type == "mobilenet_v2":
+            self.base_model = MobileNetV2(
+                input_shape=input_shape,
+                include_top=False,
+                weights="imagenet"
+            )
         else:
-            opt = optimizer
+            self.base_model = EfficientNetB0(
+                input_shape=input_shape,
+                include_top=False,
+                weights="imagenet"
+            )
+            
+        # Freeze the base model to preserve learned features
+        self.base_model.trainable = False
+        
+        # Build the "Power Head"
+        x = self.base_model(inputs, training=False)
+        x = GlobalAveragePooling2D()(x)
+        
+        # Dense Layer 1
+        x = Dense(256)(x)
+        x = BatchNormalization()(x)
+        x = Activation("relu")(x)
+        x = Dropout(0.4)(x)
+        
+        # Dense Layer 2
+        x = Dense(128)(x)
+        x = BatchNormalization()(x)
+        x = Activation("relu")(x)
+        
+        # Output Layer
+        outputs = Dense(self.num_classes, activation="softmax")(x)
+        
+        self.model = Model(inputs, outputs)
+        return self.model
+    
+    def compile(self, optimizer="adam", learning_rate=0.0001):
+        """
+        Compile the model. 
+        Uses a lower learning rate by default for transfer learning stability.
+        """
+        from tensorflow.keras.optimizers import Adam
+        opt = Adam(learning_rate=learning_rate) if optimizer == "adam" else optimizer
             
         self.model.compile(
             loss="sparse_categorical_crossentropy",
@@ -80,17 +91,38 @@ class CIFAR10Model:
             metrics=["accuracy"]
         )
         
+    def unfreeze_base_model(self, fine_tune_at=100):
+        """
+        Unfreeze the base model for fine-tuning.
+        This provides a massive power boost by allowing the AI to 
+        adjust its "deep" features to your specific dataset.
+        """
+        if self.base_model is None:
+            return
+            
+        self.base_model.trainable = True
+        
+        # Freeze layers before the fine_tune_at layer
+        for layer in self.base_model.layers[:fine_tune_at]:
+            layer.trainable = False
+            
     def summary(self):
         """Print model summary"""
         if self.model:
             self.model.summary()
-        else:
-            print("Model not built yet. Call build() first.")
             
     def save(self, filepath):
         """Save model to file"""
         if self.model:
             self.model.save(filepath)
-            print(f"Model saved to {filepath}")
-        else:
-            print("No model to save. Build and train first.")
+            print(f"VisionAI Power Model saved to {filepath}")
+
+
+class CIFAR10Model(VisionAIModel):
+    """Backward compatibility for CIFAR-10 tasks using the new Power Engine"""
+    def __init__(self, num_classes=10):
+        super().__init__(num_classes=num_classes, base_model_type="mobilenet_v2")
+    
+    def build(self, input_shape=(32, 32, 3)):
+        # For CIFAR-10, we still use MobileNetV2 but with appropriate input shape
+        return super().build(input_shape=input_shape)
