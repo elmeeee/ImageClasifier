@@ -8,13 +8,9 @@
         }
     ],
     "functions": {
-        "api/index.py": {
-            "runtime": "python3.10",
+        "api/**/*.py": {
             "memory": 2048,
             "maxDuration": 10
         }
-    },
-    "env": {
-        "PYTHONPATH": "/var/task"
     }
 }
