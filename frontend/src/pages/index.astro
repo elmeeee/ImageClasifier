@@ -225,6 +225,12 @@ const description = "Train custom image classification models in your browser. D
 									</div>
 								</div>
 								<div class="all-predictions" id="allPredictions"></div>
+								<div class="result-insights" id="resultInsights" style="display: none;">
+									<div class="result-label">Analysis Insight</div>
+									<div class="insight-box">
+										<p id="insightText"></p>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -843,6 +849,32 @@ const description = "Train custom image classification models in your browser. D
 			font-weight: 600;
 		}
 
+		/* Result Insights */
+		.result-insights {
+			margin-top: 24px;
+			padding-top: 24px;
+			border-top: 1px solid var(--border);
+		}
+
+		.insight-box {
+			background: rgba(0, 102, 255, 0.05);
+			border: 1px solid rgba(0, 102, 255, 0.2);
+			border-radius: 12px;
+			padding: 16px;
+			margin-top: 8px;
+		}
+
+		.insight-box p {
+			font-size: 14px;
+			color: var(--text-secondary);
+			line-height: 1.5;
+		}
+
+		.insight-highlight {
+			color: var(--primary);
+			font-weight: 600;
+		}
+
 		/* Footer */
 		.footer {
 			background: var(--surface);
@@ -1161,6 +1193,24 @@ const description = "Train custom image classification models in your browser. D
 								.join('');
 
 						testResult.style.display = 'block';
+
+						// Update Insights
+						const insightText = document.getElementById('insightText');
+						const resultInsights = document.getElementById('resultInsights');
+						const predictedClass = classNames[maxIndex];
+						
+						let insightMessage = '';
+						if (confidence > 90) {
+							insightMessage = `AI Sangat Yakin! Gambar ini memiliki fitur visual yang sangat mirip dengan dataset <span class="insight-highlight">${predictedClass}</span> yang Anda upload.`;
+						} else if (confidence > 70) {
+							insightMessage = `Prediksi Kuat. AI menemukan kecocokan yang tinggi dengan kategori <span class="insight-highlight">${predictedClass}</span>.`;
+						} else {
+							insightMessage = `Prediksi Lemah. AI kesulitan mengenali gambar ini dengan pasti, namun <span class="insight-highlight">${predictedClass}</span> adalah kandidat paling memungkinkan. Coba gunakan foto dengan cahaya yang lebih baik.`;
+						}
+
+						insightText.innerHTML = `${insightMessage}<br/><br/>Prediksi ini didasarkan pada model yang baru saja Anda latih menggunakan <span class="insight-highlight">${Object.values(uploadedDataset).reduce((s, a) => s + a.length, 0)} gambar</span>.`;
+						resultInsights.style.display = 'block';
+
 
 						tensor.dispose();
 						predictions.dispose();
