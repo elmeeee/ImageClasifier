@@ -6,11 +6,5 @@
             "source": "/api/(.*)",
             "destination": "/api/index.py"
         }
-    ],
-    "functions": {
-        "api/index.py": {
-            "memory": 2048,
-            "maxDuration": 10
-        }
-    }
+    ]
 }

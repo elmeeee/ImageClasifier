@@ -1,5 +1,4 @@
 from backend.api.app import app
 
-# Vercel serverless function handler
-def handler(request, context):
-    return app(request, context)
+# This is the Vercel serverless function entry point
+# Vercel will automatically handle WSGI for Flask apps
