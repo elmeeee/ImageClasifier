@@ -1265,41 +1265,6 @@ const description = "Train custom image classification models in your browser. D
 			}
 		};
 
-		const KNOWLEDGE_BASE = {
-			"1000": {
-				id: { name: "Uang 1,000 Rupiah", desc: "Uang kertas Rp1.000 (2022) menampilkan pahlawan Tjut Meutia. Bagian belakangnya menunjukkan Tari Tifa, Banda Neira, dan Bunga Anggrek Larat." },
-				en: { name: "1,000 Rupiah Note", desc: "The 1,000 Rupiah note (2022) features heroine Tjut Meutia. The reverse depicts the Tifa Dance, Banda Neira, and the Cooktown Orchid." },
-				jp: { name: "1,000ルピア紙幣", desc: "1,000ルピア紙幣（2022年版）は、チュット・ムティアを主役に描いています。裏面にはティファ舞踊などが描かれています。" }
-			},
-			"2000": {
-				id: { name: "Uang 2,000 Rupiah", desc: "Uang kertas Rp2.000 (2022) menampilkan Mohammad Hoesni Thamrin. Bagian belakang menunjukkan Tari Piring, Ngarai Sianok, dan Bunga Jeumpa." },
-				en: { name: "2,000 Rupiah Note", desc: "The 2,000 Rupiah note (2022) features Mohammad Hoesni Thamrin. The reverse shows the Plate Dance, Sianok Canyon, and Jeumpa Flower." },
-				jp: { name: "2,000ルピア紙幣", desc: "2,000ルピア紙幣は、ムハンマド・フスニ・タムリンを描いています。裏面には皿回し舞踊が描かれています。" }
-			},
-			"5000": {
-				id: { name: "Uang 5,000 Rupiah", desc: "Uang kertas Rp5.000 (2022) menampilkan Dr. K.H. Idham Chalid. Bagian belakangnya menampilkan Tari Gambyong, Gunung Bromo, dan Bunga Sedap Malam." },
-				en: { name: "5,000 Rupiah Note", desc: "The 5,000 Rupiah note (2022) features Dr. K.H. Idham Chalid. The reverse depicts Gambyong Dance, Mount Bromo, and Tuberose." },
-				jp: { name: "5,000ルピア紙幣", desc: "5,000ルピア紙幣は、イドハム・チャリド博士を描いています。裏面にはブロモ山などが描かれています。" }
-			},
-			"10000": {
-				id: { name: "Uang 10,000 Rupiah", desc: "Uang kertas Rp10.000 menampilkan Frans Kaisiepo. Bagian belakang menunjukkan Tari Pakarena, Taman Nasional Wakatobi, dan Bunga Cempaka Hutan Kasar." },
-				en: { name: "10,000 Rupiah Note", desc: "The 10,000 Rupiah note features Frans Kaisiepo. The reverse shows Pakarena Dance, Wakatobi Park, and Forest Campaca." },
-				jp: { name: "10,000ルピア紙幣", desc: "10,000ルピア紙幣は、フランス・カイシエポを描いています。" }
-			},
-			"20000": {
-				id: { name: "Uang 20,000 Rupiah", desc: "Uang kertas Rp20.000 menampilkan Dr. G.S.S.J. Ratulangi. Bagian belakang menunjukkan Tari Gong, Derawan, dan Bunga Anggrek Hitam." },
-				en: { name: "20,000 Rupiah Note", desc: "The 20,000 Rupiah note features Dr. G.S.S.J. Ratulangi. The reverse shows Gong Dance, Derawan, and Black Orchid." },
-				jp: { name: "20,000ルピア紙幣", desc: "2,0000ルピア紙幣は、ラトゥランギ博士を描いています。" }
-			},
-			"50000": {
-				id: { name: "Uang 50,000 Rupiah", desc: "Uang kertas Rp50.000 menampilkan Ir. H. Djuanda Kartawidjaja. Bagian belakang menunjukkan Tari Legong, Taman Nasional Komodo, dan Bunga Jepun Bali." },
-				en: { name: "50,000 Rupiah Note", desc: "The 50,000 Rupiah note features Djuanda Kartawidjaja. The reverse shows Legong Dance, Komodo Park, and Frangipani." },
-				jp: { name: "50,000ルピア紙幣", desc: "50,000ルピア紙幣は、ジュアンダ・カルタウィジャヤを描いています。" }
-			},
-			"100000": {
-				id: { name: "Uang 100,000 Rupiah", desc: "Uang kertas Rp100.000 menampilkan Dr. (H.C.) Ir. Soekarno dan Dr. (H.C.) Drs. Mohammad Hatta. Bagian belakang menunjukkan Tari Topeng Betawi, Raja Ampat, dan Bunga Anggrek Bulan." },
-				en: { name: "100,000 Rupiah Note", desc: "The 100,000 Rupiah note features Soekarno and Mohammad Hatta. The reverse shows Betawi Mask Dance, Raja Ampat, and Moon Orchid." },
-				jp: { name: "100,000ルピア紙幣", desc: "100,000ルピア紙幣は、スカルノとモハメッド・ハッタを描いています。" }
 			}
 		};
 
@@ -1328,7 +1293,6 @@ const description = "Train custom image classification models in your browser. D
 			}
 
 			const t = UI_TRANSLATIONS[lang];
-			let msg = '';
 			const labels = {
 				id: { vhigh: "AI Sangat Yakin! Ini mirip", high: "AI menebak ini", low: "AI ragu, tapi mungkin ini" },
 				en: { vhigh: "AI is Very Confident! This looks like", high: "AI predicts this is", low: "AI is unsure, but it might be" },
@@ -1338,30 +1302,46 @@ const description = "Train custom image classification models in your browser. D
 			const status = lastConfidence > 90 ? lb.vhigh : (lastConfidence > 70 ? lb.high : lb.low);
 			insightText.innerHTML = `${status} <span class="insight-highlight">${predictedClass}</span>.`;
 
-			// Smart Matching Logic
-			let match = null;
-			const cleanName = predictedClass.toLowerCase().replace(/[^0-9a-z]/g, '');
+			// UNIVERSAL DYNAMIC EXPLANATION
+			let title = '';
+			let description = '';
 			
+			// 1. Check if it's in our Bonus Knowledge Base first
+			let bonusMatch = null;
+			const cleanName = predictedClass.toLowerCase().replace(/[^0-9a-z]/g, '');
 			for (let key in KNOWLEDGE_BASE) {
-				// Match if label contains the key (nominal)
 				if (cleanName.includes(key)) {
-					match = KNOWLEDGE_BASE[key][lang];
+					bonusMatch = KNOWLEDGE_BASE[key][lang];
 					break;
 				}
 			}
 
-			if (match) {
-				encyName.textContent = match.name;
-				encyDesc.textContent = match.desc;
+			if (bonusMatch) {
+				title = bonusMatch.name;
+				description = bonusMatch.desc;
 			} else {
-				const generic = {
-					id: { name: `Objek: ${predictedClass}`, desc: `Ini adalah objek yang Anda beri label "${predictedClass}". Model VisionAI telah mempelajari pola visual dari dataset Anda untuk mengenali objek ini.` },
-					en: { name: `Object: ${predictedClass}`, desc: `This is the object you labeled as "${predictedClass}". VisionAI has learned unique visual patterns from your dataset to recognize this.` },
-					jp: { name: `オブジェクト: ${predictedClass}`, desc: `これはあなたが「${predictedClass}」と名付けたオブジェクトです。VisionAIはデータセットから視覚パターンを学習しました。` }
+				// 2. Dynamic Universal Explanation for ANY object
+				const genericExpl = {
+					id: {
+						title: `Objek: ${predictedClass}`,
+						desc: `VisionAI mengenali objek ini sebagai "${predictedClass}" berdasarkan analisis pola visual, warna, dan fitur unik yang Anda latih sebelumnya. Model mendeteksi tingkat kemiripan fitur yang tinggi dari dataset yang Anda berikan.`
+					},
+					en: {
+						title: `Object: ${predictedClass}`,
+						desc: `VisionAI identifies this as "${predictedClass}" by analyzing visual patterns, colors, and unique features from your training session. The model found high feature similarity based on your provided dataset.`
+					},
+					jp: {
+						title: `オブジェクト: ${predictedClass}`,
+						desc: `VisionAIは、以前のトレーニングでの視覚パターン、色、および独自の特徴の分析に基づいて、これを「${predictedClass}」として識別します。モデルは、提供されたデータセットに基づいた高い特徴の類似性を検出しました。`
+					}
 				};
-				encyName.textContent = generic[lang].name;
-				encyDesc.textContent = generic[lang].desc;
+				const g = genericExpl[lang];
+				title = g.title;
+				description = g.desc;
 			}
+
+			encyName.textContent = title;
+			encyDesc.textContent = description;
 			encySection.style.display = 'block';
 		};
 
