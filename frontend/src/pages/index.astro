@@ -1432,14 +1432,15 @@ const description = "Train custom image classification models in your browser. D
 
 		.opencode-btn svg {
 			width: 14px;
+```
 			height: 14px;
 		}
 	</style>
 
 	<!-- VisionAI Power Core: TensorFlow + MobileNet -->
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+	<script is:inline src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+	<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 	<script is:inline>
 		let uploadedDataset = {};
