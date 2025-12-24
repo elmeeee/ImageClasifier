@@ -1,5 +1,6 @@
 {
-    "buildCommand": "cd frontend && npm ci --legacy-peer-deps && npm run build && cp -r .vercel/output/* ../.vercel/output/ 2>/dev/null || true",
+    "buildCommand": "cd frontend && npm ci --legacy-peer-deps && npm run build",
+    "outputDirectory": "frontend/dist",
     "rewrites": [
         {
             "source": "/api/(.*)",
