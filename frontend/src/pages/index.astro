@@ -1597,8 +1597,14 @@ const description = "Train custom image classification models in your browser. D
 							labArrs.push(i);
 
 							// Data Augmentation: Horizontal Flip
-							const flipped = tf.image.flipLeftRight(imgTensor);
+							const expanded = imgTensor.expandDims(0);
+							const flipped = tf.image.flipLeftRight(expanded);
 							featArrs.push(featureExtractor.infer(flipped, true));
+							labArrs.push(i);
+
+							// Data Augmentation: Slight Rotation (AI variety)
+							const rotated = tf.image.rotateWithOffset(expanded, 0.1); // ~5-6 degrees
+							featArrs.push(featureExtractor.infer(rotated, true));
 							labArrs.push(i);
 						});
 						
