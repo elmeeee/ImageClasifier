@@ -251,6 +251,43 @@ const description = "Train custom image classification models in your browser. D
 						</div>
 					</div>
 				</section>
+
+				<!-- Step 4: Export Model -->
+				<section class="card" id="exportSection" style="display: none;">
+					<div class="card-header">
+						<div class="step-badge">
+							<span class="step-number">4</span>
+						</div>
+						<div class="card-title-group">
+							<h3 class="card-title" data-t="step-4-title">Export & Use Model</h3>
+							<p class="card-subtitle" data-t="step-4-subtitle">Download your model to use in other applications</p>
+						</div>
+					</div>
+					<div class="export-grid">
+						<div class="export-card">
+							<div class="export-info">
+								<h4 data-t="exp-tfjs">Format TensorFlow.js</h4>
+								<p data-t="exp-tfjs-desc">Download model untuk web atau aplikasi Node.js.</p>
+							</div>
+							<button class="btn-primary" id="exportTfjsBtn">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+								</svg>
+								<span>Download .json + .bin</span>
+							</button>
+						</div>
+						<div class="export-card conversion">
+							<div class="export-info">
+								<h4 data-t="exp-convert">Konversi ke .mlmodel / .tflite</h4>
+								<p data-t="exp-convert-desc">Gunakan script Python untuk konversi ke iOS/Android.</p>
+							</div>
+							<div class="code-snippet-box">
+								<code>pip install tensorflowjs coremltools</code>
+								<code>tensorflowjs_converter --input_format=tfjs_layers_model model.json ./output</code>
+							</div>
+						</div>
+					</div>
+				</section>
 			</div>
 		</main>
 
@@ -1206,6 +1243,7 @@ const description = "Train custom image classification models in your browser. D
 			trainedModel = model;
 			document.getElementById('progressText').textContent = 'Training complete! Ready to test.';
 			document.getElementById('testSection').style.display = 'block';
+			document.getElementById('exportSection').style.display = 'block';
 			
 			setTimeout(() => {
 				document.getElementById('testSection').scrollIntoView({ behavior: 'smooth' });
@@ -1264,7 +1302,13 @@ const description = "Train custom image classification models in your browser. D
 				"res-preds": "Semua Prediksi",
 				"res-analysis": "Wawasan Analisis",
 				"res-ency": "Ensiklopedia",
-				"footer-powered": "Didukung oleh"
+				"footer-powered": "Didukung oleh",
+				"step-4-title": "Langkah 4: Ekspor & Gunakan Model",
+				"step-4-subtitle": "Unduh model Anda untuk digunakan di aplikasi lain",
+				"exp-tfjs": "Format TensorFlow.js",
+				"exp-tfjs-desc": "Unduh model untuk web atau aplikasi Node.js.",
+				"exp-convert": "Konversi ke .mlmodel / .tflite",
+				"exp-convert-desc": "Gunakan script Python untuk konversi ke iOS/Android."
 			},
 			en: {
 				"status-ready": "VisionAI Ready",
@@ -1292,7 +1336,13 @@ const description = "Train custom image classification models in your browser. D
 				"res-preds": "All Predictions",
 				"res-analysis": "Analysis Insight",
 				"res-ency": "Encyclopedia",
-				"footer-powered": "Powered by"
+				"footer-powered": "Powered by",
+				"step-4-title": "Step 4: Export & Use Model",
+				"step-4-subtitle": "Download your model to use in other applications",
+				"exp-tfjs": "TensorFlow.js Format",
+				"exp-tfjs-desc": "Download model for Web or Node.js apps.",
+				"exp-convert": "Convert to .mlmodel / .tflite",
+				"exp-convert-desc": "Use Python scripts to convert for iOS/Android."
 			},
 			jp: {
 				"status-ready": "準備完了",
@@ -1320,7 +1370,13 @@ const description = "Train custom image classification models in your browser. D
 				"res-preds": "すべての予測",
 				"res-analysis": "分析の洞察",
 				"res-ency": "百科事典",
-				"footer-powered": "提供元"
+				"footer-powered": "提供元",
+				"step-4-title": "モデルのエクスポートと使用",
+				"step-4-subtitle": "他のアプリケーションで使用するためにモデルをダウンロードする",
+				"exp-tfjs": "TensorFlow.js 形式",
+				"exp-tfjs-desc": "WebまたはNode.jsアプリケーション用のモデルをダウンロードします。",
+				"exp-convert": ".mlmodel / .tflite への変換",
+				"exp-convert-desc": "Pythonスクリプトを使用してiOS/Android用に変換します。"
 			}
 		};
 		const KNOWLEDGE_BASE = {
@@ -1507,6 +1563,14 @@ const description = "Train custom image classification models in your browser. D
 					testImg.src = e.target.result;
 				};
 				reader.readAsDataURL(file);
+			}
+		});
+
+		// EXPORT LOGIC
+		const exportTfjsBtn = document.getElementById('exportTfjsBtn');
+		exportTfjsBtn.addEventListener('click', async () => {
+			if (trainedModel) {
+				await trainedModel.save('downloads://vision-ai-model');
 			}
 		});
 	</script>
