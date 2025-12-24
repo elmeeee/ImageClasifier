@@ -1,0 +1,2 @@
+# Don't ignore frontend/dist during Vercel build
+!frontend/dist
