@@ -55,9 +55,16 @@ const description = "Train custom image classification models in your browser. D
 					</svg>
 					<h1 class="logo-text">VisionAI</h1>
 				</div>
-				<div class="status-badge" id="statusBadge">
-					<span class="status-dot"></span>
-					<span>Ready</span>
+				<div class="header-right">
+					<div class="global-lang-selector">
+						<button class="g-lang-btn active" data-g-lang="id">ID</button>
+						<button class="g-lang-btn" data-g-lang="en">EN</button>
+						<button class="g-lang-btn" data-g-lang="jp">JP</button>
+					</div>
+					<div class="status-badge" id="statusBadge">
+						<span class="status-dot"></span>
+						<span data-t="status-ready">Ready</span>
+					</div>
 				</div>
 			</div>
 		</header>
@@ -66,8 +73,8 @@ const description = "Train custom image classification models in your browser. D
 		<section class="hero">
 			<div class="container">
 				<div class="hero-content">
-					<h2 class="hero-title">Train Your Own<br/><span class="gradient-text">Image Classifier</span></h2>
-					<p class="hero-description">No coding required. Just drag & drop your images, and let AI do the magic.</p>
+					<h2 class="hero-title" data-t="hero-title">Train Your Own<br/><span class="gradient-text">Image Classifier</span></h2>
+					<p class="hero-description" data-t="hero-desc">No coding required. Just drag & drop your images, and let AI do the magic.</p>
 					<div class="hero-features">
 						<div class="feature-badge">
 							<svg viewBox="0 0 20 20" fill="currentColor">
@@ -224,14 +231,10 @@ const description = "Train custom image classification models in your browser. D
 										<span class="confidence-text" id="confidenceText"></span>
 									</div>
 								</div>
+								<div class="all-predictions" id="allPredictions"></div>
 								<div class="result-insights" id="resultInsights" style="display: none;">
 									<div class="insight-header">
-										<div class="result-label">Analysis Insight</div>
-										<div class="lang-selector">
-											<button class="lang-btn active" data-lang="id">ID</button>
-											<button class="lang-btn" data-lang="en">EN</button>
-											<button class="lang-btn" data-lang="jp">JP</button>
-										</div>
+										<div class="result-label" data-t="res-analysis">Analysis Insight</div>
 									</div>
 									<div class="insight-box">
 										<p id="insightText"></p>
@@ -336,6 +339,43 @@ const description = "Train custom image classification models in your browser. D
 			justify-content: space-between;
 			align-items: center;
 		}
+
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		.global-lang-selector {
+			display: flex;
+			gap: 4px;
+			background: rgba(255, 255, 255, 0.03);
+			padding: 4px;
+			border-radius: 8px;
+			border: 1px solid var(--border);
+		}
+
+		.g-lang-btn {
+			background: transparent;
+			border: none;
+			color: var(--text-muted);
+			padding: 4px 8px;
+			border-radius: 6px;
+			font-size: 11px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.g-lang-btn:hover {
+			color: var(--text);
+		}
+
+		.g-lang-btn.active {
+			background: var(--primary);
+			color: white;
+		}
+
 
 		.logo-container {
 			display: flex;
@@ -877,34 +917,6 @@ const description = "Train custom image classification models in your browser. D
 			margin-bottom: 8px;
 		}
 
-		.lang-selector {
-			display: flex;
-			gap: 4px;
-		}
-
-		.lang-btn {
-			background: var(--surface);
-			border: 1px solid var(--border);
-			color: var(--text-muted);
-			padding: 4px 8px;
-			border-radius: 6px;
-			font-size: 10px;
-			font-weight: 700;
-			cursor: pointer;
-			transition: all 0.2s;
-		}
-
-		.lang-btn:hover {
-			border-color: var(--primary);
-			color: var(--text);
-		}
-
-		.lang-btn.active {
-			background: var(--primary);
-			border-color: var(--primary);
-			color: white;
-		}
-
 		.insight-box {
 			background: rgba(0, 102, 255, 0.05);
 			border: 1px solid rgba(0, 102, 255, 0.2);
@@ -1226,6 +1238,107 @@ const description = "Train custom image classification models in your browser. D
 		const testInput = document.getElementById('testInput');
 		const testResult = document.getElementById('testResult');
 
+		const UI_TRANSLATIONS = {
+			id: {
+				"status-ready": "VisionAI Siap",
+				"hero-title": "Latih Klasifikasi Gambar Anda",
+				"hero-desc": "Tanpa coding. Drag & drop gambar, dan biarkan AI bekerja.",
+				"res-analysis": "Wawasan Analisis AI",
+				"res-preds": "Semua Prediksi",
+				"res-confidence": "Tingkat Keyakinan"
+			},
+			en: {
+				"status-ready": "VisionAI Ready",
+				"hero-title": "Train Your Own Image Classifier",
+				"hero-desc": "No coding required. Just drag & drop your images, and let AI do the magic.",
+				"res-analysis": "AI Analysis Insight",
+				"res-preds": "All Predictions",
+				"res-confidence": "Confidence Level"
+			},
+			jp: {
+				"status-ready": "準備完了",
+				"hero-title": "画像分類器のトレーニング",
+				"hero-desc": "コーディング不要。画像をアップロードしてAIに任せましょう。",
+				"res-analysis": "AI分析の洞察",
+				"res-preds": "すべての予測",
+				"res-confidence": "信頼度"
+			}
+		};
+
+		const KNOWLEDGE_BASE = {
+			"5000": {
+				id: { name: "Uang 5,000 Rupiah", desc: "Uang kertas Rp5.000 (Tahun Emisi 2022) menampilkan pahlawan nasional Dr. K.H. Idham Chalid. Bagian belakangnya menunjukkan Tari Gambyong, Gunung Bromo, dan Bunga Sedap Malam." },
+				en: { name: "5,000 Rupiah Note", desc: "The 5,000 Rupiah banknote (2022 Issue) features national hero Dr. K.H. Idham Chalid. The reverse depicts the Gambyong Dance, Mount Bromo, and the Tuberose flower." },
+				jp: { name: "5,000ルピア紙幣", desc: "5,000ルピア紙幣（2022年版）は、英雄イドハム・チャリド博士を主役に描いています。裏面にはブロモ山などが描かれています。" }
+			}
+		};
+
+		let currentGlobalLang = 'id';
+		let lastProbabilities = null;
+		let lastMaxIndex = null;
+		let lastConfidence = null;
+
+		const updateResultUI = (lang) => {
+			if (lastMaxIndex === null) return;
+			const predictedClass = classNames[lastMaxIndex];
+			const insightText = document.getElementById('insightText');
+			const encySection = document.getElementById('encyclopediaSection');
+			const encyName = document.getElementById('encyName');
+			const encyDesc = document.getElementById('encyDesc');
+			const allPreds = document.getElementById('allPredictions');
+			
+			// Update All Predictions
+			if (allPreds) {
+				allPreds.innerHTML = `<h4>${UI_TRANSLATIONS[lang]["res-preds"]}</h4>` +
+					classNames.map((name, i) => `
+						<div class="prediction-item">
+							<span class="name">${name}</span>
+							<span class="score">${(lastProbabilities[i] * 100).toFixed(1)}%</span>
+						</div>
+					`).join('');
+			}
+
+			// Update AI Insight
+			const t = UI_TRANSLATIONS[lang];
+			let msg = '';
+			if (lang === 'id') msg = lastConfidence > 90 ? `AI Sangat Yakin! Ini mirip <span class="insight-highlight">${predictedClass}</span>.` : `AI menebak ini <span class="insight-highlight">${predictedClass}</span>.`;
+			else if (lang === 'en') msg = lastConfidence > 90 ? `AI is Very Confident! This looks like <span class="insight-highlight">${predictedClass}</span>.` : `AI predicts this is <span class="insight-highlight">${predictedClass}</span>.`;
+			else msg = lastConfidence > 90 ? `AIは非常に自信があります！これは<span class="insight-highlight">${predictedClass}</span>に見えます。` : `AIはこれが<span class="insight-highlight">${predictedClass}</span>だと予測しています。`;
+			
+			insightText.innerHTML = msg;
+
+			// Update Encyclopedia
+			let match = null;
+			for (let key in KNOWLEDGE_BASE) {
+				if (predictedClass.toLowerCase().includes(key)) { match = KNOWLEDGE_BASE[key][lang]; break; }
+			}
+
+			if (match) {
+				encyName.textContent = match.name;
+				encyDesc.textContent = match.desc;
+				encySection.style.display = 'block';
+			} else {
+				encySection.style.display = 'none';
+			}
+		};
+
+		const updateGlobalUI = (lang) => {
+			currentGlobalLang = lang;
+			document.querySelectorAll('[data-t]').forEach(el => {
+				const key = el.getAttribute('data-t');
+				if (UI_TRANSLATIONS[lang][key]) el.textContent = UI_TRANSLATIONS[lang][key];
+			});
+			updateResultUI(lang);
+		};
+
+		document.querySelectorAll('.g-lang-btn').forEach(btn => {
+			btn.addEventListener('click', (e) => {
+				document.querySelectorAll('.g-lang-btn').forEach(b => b.classList.remove('active'));
+				e.target.classList.add('active');
+				updateGlobalUI(e.target.dataset.gLang);
+			});
+		});
+
 		testUpload.addEventListener('click', () => testInput.click());
 
 		testInput.addEventListener('change', async (e) => {
@@ -1233,135 +1346,22 @@ const description = "Train custom image classification models in your browser. D
 			if (file && trainedModel) {
 				const reader = new FileReader();
 				reader.onload = async (e) => {
-					const img = document.getElementById('testImage');
-					img.src = e.target.result;
-					
+					document.getElementById('testImage').src = e.target.result;
 					const testImg = new Image();
 					testImg.onload = async () => {
-						const tensor = tf.browser.fromPixels(testImg)
-							.resizeBilinear([224, 224])
-							.toFloat()
-							.div(255.0)
-							.expandDims(0);
-
+						const tensor = tf.browser.fromPixels(testImg).resizeBilinear([224, 224]).toFloat().div(255.0).expandDims(0);
 						const predictions = await trainedModel.predict(tensor);
-						const probabilities = await predictions.data();
-						const maxIndex = probabilities.indexOf(Math.max(...Array.from(probabilities)));
-						const confidence = probabilities[maxIndex] * 100;
+						lastProbabilities = await predictions.data();
+						lastMaxIndex = lastProbabilities.indexOf(Math.max(...Array.from(lastProbabilities)));
+						lastConfidence = lastProbabilities[lastMaxIndex] * 100;
 
-						document.getElementById('resultClass').textContent = classNames[maxIndex];
-						document.getElementById('confidenceFill').style.width = confidence + '%';
-						document.getElementById('confidenceText').textContent = `${confidence.toFixed(1)}% confidence`;
-
-						const allPreds = document.getElementById('allPredictions');
-						allPreds.innerHTML = '<h4>All Predictions</h4>' +
-							classNames
-								.map((name, i) => `
-									<div class="prediction-item">
-										<span class="name">${name}</span>
-										<span class="score">${(probabilities[i] * 100).toFixed(1)}%</span>
-									</div>
-								`)
-								.join('');
+						document.getElementById('resultClass').textContent = classNames[lastMaxIndex];
+						document.getElementById('confidenceFill').style.width = lastConfidence + '%';
+						document.getElementById('confidenceText').textContent = `${lastConfidence.toFixed(1)}%`;
 
 						testResult.style.display = 'block';
-
-						testResult.style.display = 'block';
-
-						// Smart Encyclopedia & Language Logic
-						let currentLang = 'id';
-						const KNOWLEDGE_BASE = {
-							"5000": {
-								id: { name: "Uang 5,000 Rupiah", desc: "Uang kertas Rp5.000 (Tahun Emisi 2022) menampilkan pahlawan nasional Dr. K.H. Idham Chalid. Bagian belakangnya menunjukkan Tari Gambyong, Gunung Bromo, dan Bunga Sedap Malam." },
-								en: { name: "5,000 Rupiah Note", desc: "The 5,000 Rupiah banknote (2022 Issue) features national hero Dr. K.H. Idham Chalid. The reverse depicts the Gambyong Dance, Mount Bromo, and the Tuberose flower." },
-								jp: { name: "5,000ルピア紙幣", desc: "5,000ルピア紙幣（2022年版）は、国民的英雄のイドハム・チャリド博士を主役に描いています。裏面にはガンビョン舞踊、ブロモ山、チューベローズの花が描かれています。" }
-							},
-							"1000": {
-								id: { name: "Uang 1,000 Rupiah", desc: "Uang kertas Rp1.000 (Tahun Emisi 2022) menampilkan pahlawan Tjut Meutia. Bagian belakangnya menunjukkan Tari Tifa, Banda Neira, dan Bunga Anggrek Larat." },
-								en: { name: "1,000 Rupiah Note", desc: "The 1,000 Rupiah banknote (2022 Issue) features the heroine Tjut Meutia. The reverse depicts the Tifa Dance, Banda Neira, and the Cooktown Orchid." },
-								jp: { name: "1,000ルピア紙幣", desc: "1,000ルピア紙幣（2022年版）は、英雄チュット・ムティアを主役に描いています。裏面にはティファ舞踊、バンダ・ネイラ、ララット蘭が描かれています。" }
-							},
-							"10000": {
-								id: { name: "Uang 10,000 Rupiah", desc: "Uang kertas Rp10.000 menampilkan Frans Kaisiepo. Bagian belakang menunjukkan Tari Pakarena, Taman Nasional Wakatobi, dan Bunga Cempaka Hutan Kasar." },
-								en: { name: "10,000 Rupiah Note", desc: "The 10,000 Rupiah note features Frans Kaisiepo. The reverse shows the Pakarena Dance, Wakatobi National Park, and the Kasar Forest Campaca flower." },
-								jp: { name: "10,000ルピア紙幣", desc: "10,000ルピア紙幣はフランス・カイシエポを主役に描いています。裏面にはパカレナ舞踊、ワカトビ国立公園、チェンパカ・フタン・カサールの花が描かれています。" }
-							}
-						};
-
-						const updateDisplay = (lang) => {
-							currentLang = lang;
-							const predictedClass = classNames[maxIndex];
-							const insightText = document.getElementById('insightText');
-							const encySection = document.getElementById('encyclopediaSection');
-							const encyName = document.getElementById('encyName');
-							const encyDesc = document.getElementById('encyDesc');
-
-							// 1. Update AI Insight based on Language
-							const translations = {
-								id: { 
-									vhigh: `AI Sangat Yakin! Gambar ini sangat mirip dengan <span class="insight-highlight">${predictedClass}</span>.`,
-									high: `Prediksi Kuat untuk kategori <span class="insight-highlight">${predictedClass}</span>.`,
-									low: `Prediksi Lemah. Mungkin ini <span class="insight-highlight">${predictedClass}</span>, tapi fotonya kurang jelas.`,
-									base: `<br/><br/>Latihan model menggunakan ${Object.values(uploadedDataset).reduce((s, a) => s + a.length, 0)} gambar.`
-								},
-								en: {
-									vhigh: `AI is very confident! This looks exactly like <span class="insight-highlight">${predictedClass}</span>.`,
-									high: `Strong prediction for category <span class="insight-highlight">${predictedClass}</span>.`,
-									low: `Weak prediction. It might be <span class="insight-highlight">${predictedClass}</span>, but the photo is unclear.`,
-									base: `<br/><br/>Model trained using ${Object.values(uploadedDataset).reduce((s, a) => s + a.length, 0)} images.`
-								},
-								jp: {
-									vhigh: `AIは非常に自信があります！これはまさに<span class="insight-highlight">${predictedClass}</span>のように見えます。`,
-									high: `カテゴリ<span class="insight-highlight">${predictedClass}</span>の強力な予測。`,
-									low: `弱い予測。おそらく<span class="insight-highlight">${predictedClass}</span>ですが、写真が不明瞭です。`,
-									base: `<br/><br/>${Object.values(uploadedDataset).reduce((s, a) => s + a.length, 0)}枚の画像を使用してトレーニングされたモデル。`
-								}
-							};
-
-							const t = translations[lang];
-							let msg = confidence > 95 ? t.vhigh : (confidence > 75 ? t.high : t.low);
-							insightText.innerHTML = msg + t.base;
-
-							// 2. Update Encyclopedia if match found
-							let foundMatch = null;
-							for (let key in KNOWLEDGE_BASE) {
-								if (predictedClass.toLowerCase().includes(key)) {
-									foundMatch = KNOWLEDGE_BASE[key][lang];
-									break;
-								}
-							}
-
-							if (foundMatch) {
-								encyName.textContent = foundMatch.name;
-								encyDesc.textContent = foundMatch.desc;
-								encySection.style.display = 'block';
-							} else {
-								// Generic Description
-								const generic = {
-									id: { name: `Objek: ${predictedClass}`, desc: `Ini adalah objek yang Anda namakan "${predictedClass}". Model VisionAI mengenali pola unik dari dataset yang Anda berikan.` },
-									en: { name: `Object: ${predictedClass}`, desc: `This is the object you named "${predictedClass}". The VisionAI model recognizes unique patterns from the dataset you provided.` },
-									jp: { name: `オブジェクト: ${predictedClass}`, desc: `これはあなたが「${predictedClass}」と名付けたオブジェクトです。VisionAIモデルは、提供されたデータセットから独自のパターンを認識します。` }
-								};
-								encyName.textContent = generic[lang].name;
-								encyDesc.textContent = generic[lang].desc;
-								encySection.style.display = 'block';
-							}
-						};
-
-						// Setup Language Buttons
-						document.querySelectorAll('.lang-btn').forEach(btn => {
-							btn.addEventListener('click', (e) => {
-								document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-								e.target.classList.add('active');
-								updateDisplay(e.target.dataset.lang);
-							});
-						});
-
-						// Initial Display
-						updateDisplay('id');
 						document.getElementById('resultInsights').style.display = 'block';
-
-
+						updateResultUI(currentGlobalLang);
 
 						tensor.dispose();
 						predictions.dispose();
