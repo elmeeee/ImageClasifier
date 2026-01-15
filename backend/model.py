@@ -115,7 +115,7 @@ class VisionAIModel:
         """Save model to file"""
         if self.model:
             self.model.save(filepath)
-            print(f"VisionAI Power Model saved to {filepath}")
+            print(f"Training Data - Image Clasifier Power Model saved to {filepath}")
 
 
 class CIFAR10Model(VisionAIModel):

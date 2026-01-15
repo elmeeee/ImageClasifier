@@ -1,5 +1,5 @@
 """
-Flask API for VisionAI Power Training and Inference
+Flask API for Training Data - Image Clasifier Power Training and Inference
 Designed to work with Astro frontend and deploy on Vercel
 """
 from flask import Flask, jsonify, request, send_file
@@ -51,7 +51,7 @@ def initialize_data_loader():
 @app.route('/api/health')
 def health():
     """Health check endpoint"""
-    return jsonify({"status": "healthy", "service": "VisionAI Power Engine API"})
+    return jsonify({"status": "healthy", "service": "Training Data - Image Clasifier Power Engine API"})
 
 
 @app.route('/api/dataset/info')
@@ -97,13 +97,13 @@ def start_training():
             trainer_config = {
                 "epochs": epochs,
                 "batch_size": batch_size,
-                "model_name": "visionai-power-model",
+                "model_name": "Training Data - Image Clasifier-power-model",
                 "log_dir": LOGS_DIR,
                 "model_dir": RESULTS_DIR
             }
             
             trainer = ModelTrainer(model, loader, trainer_config)
-            training_status["message"] = "VisionAI is learning..."
+            training_status["message"] = "Training Data - Image Clasifier is learning..."
             
             trainer.train()
             
@@ -134,7 +134,7 @@ def predict():
         from tensorflow.keras.models import load_model
         
         # Load the latest best model
-        model_name = request.form.get('model', 'visionai-power-model-best.h5')
+        model_name = request.form.get('model', 'Training Data - Image Clasifier-power-model-best.h5')
         model_path = os.path.join(RESULTS_DIR, model_name)
         
         if not os.path.exists(model_path):
@@ -168,7 +168,7 @@ def predict():
             "predicted_label": loader.get_class_name(predicted_class),
             "confidence": confidence,
             "probabilities": probabilities,
-            "engine": "VisionAI Power Hub"
+            "engine": "Training Data - Image Clasifier Power Hub"
         })
     
     except Exception as e:
@@ -191,6 +191,6 @@ def training_progress():
 
 if __name__ == '__main__':
     print("="*60)
-    print("VisionAI Power Engine API - Python Backend")
+    print("Training Data - Image Clasifier Power Engine API - Python Backend")
     print("="*60)
     app.run(debug=True, host='0.0.0.0', port=5000)

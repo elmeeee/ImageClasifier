@@ -1,5 +1,5 @@
 """
-Data loading and preprocessing utilities for VisionAI
+Data loading and preprocessing utilities for Training Data - Image Clasifier
 """
 import tensorflow as tf
 import tensorflow_datasets as tfds
